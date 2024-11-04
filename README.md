@@ -25,3 +25,10 @@ Once the app is running, users can:
 - **Objective**: Improve emergency response times, enhance campus safety, and support UI’s sustainability goals.
 - **Stakeholders**: UI students, staff, external visitors, and Campus Security (PLK).
 - **Modules**: Disaster Reporting, Real-Time Map, Notification System, Direct Communication with PLK.
+
+## Authors
+This project was developed by Group 7 for the project in the Software Development course. Contributors:
+- **Muhamad Fauzan** - *2206819054* - [MFauzan29](https://github.com/MFauzan29)
+- **Raja Yonandro Ruslito** - *2206059553* - [RajaRuslito](https://github.com/RajaRuslito)
+- **Muhammad Fahish Haritsah Bimo** - *2206059616* - [mfharitsah](https://github.com/mfharitsah)
+
