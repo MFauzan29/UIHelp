@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*{
+  padding : 0;
+  margin : 0;
+}
+
+/* Mengatur font Noto Sans sebagai font utama di seluruh aplikasi */
+body {
+  font-family: "Noto Sans", serif;
+  font-optical-sizing: auto;
+  font-weight: 200;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
