@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Polyline } from "react-leaflet";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import Modal from "react-modal";
 import * as L from "leaflet";
+
+Modal.setAppElement("#root");
 
 const getXmlString = () => {
   return `<osm version="0.6" generator="openstreetmap-cgimap 2.0.1 (2051430 spike-08.openstreetmap.org)" copyright="OpenStreetMap and contributors" attribution="http://www.openstreetmap.org/copyright" license="http://opendatacommons.org/licenses/odbl/1-0/">
@@ -159,6 +162,7 @@ function RealTimeClock() {
 
 export default function HomePage() {
   const [positions, setPositions] = useState([]);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -178,6 +182,14 @@ export default function HomePage() {
     setPositions(coordinates);
   }, []);
 
+  const openModal = () => {
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+  };
+
   return (
     <div className="w-auto h-dvh flex justify-center items-center bg-[#FFFBE6] gap-4 py-14 font-sans">
       <div className="space-y-2">
@@ -185,15 +197,50 @@ export default function HomePage() {
         <button
           className="bg-red-600 hover:bg-orange-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           type="button"
-          onClick={() => {
-            toast.success("Masuk Ke Report Form");
-            setTimeout(() => {
-              navigate("/report-form");
-            }, 2000);
+          onClick={
+            openModal
+            //   {
+            //   toast.success("Masuk Ke Report Form");
+            //   setTimeout(() => {
+            //     navigate("/report-form");
+            //   }, 2000);
+            // }
+          }
+        >
+          Report Accident
+        </button>
+
+        <Modal
+          isOpen={modalIsOpen}
+          onRequestClose={closeModal}
+          style={{
+            content: {
+              top: "50%",
+              left: "50%",
+              right: "auto",
+              bottom: "auto",
+              transform: "translate(-50%, -50%)",
+              backgroundColor: "white",
+              borderRadius: "15px",
+              padding: "20px",
+              zIndex: 1000, // Pastikan modal berada di atas
+            },
+            overlay: {
+              backgroundColor: "rgba(0, 0, 0, 0.75)", // Latar belakang gelap
+              zIndex: 999, // Overlay di bawah modal
+            },
           }}
         >
-          Lapor Kejadian
-        </button>
+          <h2>Report Your Incident</h2>
+          {/* Tambahkan gambar atau konten lainnya di sini */}
+          <div>
+            <img src="image1.png" alt="Incident Type 1" />
+            <img src="image2.png" alt="Incident Type 2" />
+            <img src="image3.png" alt="Incident Type 3" />
+            <img src="image4.png" alt="Incident Type 4" />
+          </div>
+          <button onClick={closeModal}>Close</button>
+        </Modal>
       </div>
 
       <MapContainer
