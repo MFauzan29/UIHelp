@@ -3,6 +3,10 @@ import { MapContainer, TileLayer, Polyline } from "react-leaflet";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import Modal from "react-modal";
+import firelogo from "../assets/fire.jpg";
+import floodlogo from "../assets/flood.png";
+import animallogo from "../assets/wildanimal.png";
+import crashlogo from "../assets/crash.png";
 import * as L from "leaflet";
 
 Modal.setAppElement("#root");
@@ -163,7 +167,16 @@ function RealTimeClock() {
 export default function HomePage() {
   const [positions, setPositions] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [hovered, setHovered] = useState(null);
   const navigate = useNavigate();
+
+  const handleMouseEnter = (incidentName) => {
+    setHovered(incidentName);
+  };
+
+  const handleMouseLeave = () => {
+    setHovered(null);
+  };
 
   useEffect(() => {
     // Parsing data dari XML
@@ -191,8 +204,8 @@ export default function HomePage() {
   };
 
   return (
-    <div className="w-auto h-dvh flex justify-center items-center bg-[#FFFBE6] gap-4 py-14 font-sans">
-      <div className="space-y-2">
+    <div className="w-auto h-dvh flex justify-center items-center bg-[#FFFBE6] gap-4 py-14 font-sans ">
+      <div className="absolute top-4 left-4  space-y-2">
         <RealTimeClock />
         <button
           className="bg-red-600 hover:bg-orange-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
@@ -231,15 +244,140 @@ export default function HomePage() {
             },
           }}
         >
-          <h2>Report Your Incident</h2>
+          <h2 className="text-center font-bold py-3">Report Your Incident</h2>
           {/* Tambahkan gambar atau konten lainnya di sini */}
-          <div>
-            <img src="image1.png" alt="Incident Type 1" />
-            <img src="image2.png" alt="Incident Type 2" />
-            <img src="image3.png" alt="Incident Type 3" />
-            <img src="image4.png" alt="Incident Type 4" />
+          <div className="flex gap-4">
+            <div
+              className="relative"
+              onMouseEnter={() => handleMouseEnter("Kebakaran")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <img
+                src={firelogo}
+                alt="Fire Incident"
+                className="rounded-full w-20 h-20 object-cover border-2 border-black transition-transform duration-300 ease-in-out transform hover:scale-125"
+                onClick={() => {
+                  toast.success("Masuk Ke Report Form");
+                  setTimeout(() => {
+                    navigate("/report-form");
+                  }, 2000);
+                }}
+              />
+              {hovered === "Kebakaran" && (
+                <div
+                  className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-opacity-70 bg-black rounded-full text-white"
+                  style={{ pointerEvents: "none" }}
+                >
+                  Fire
+                </div>
+              )}
+            </div>
+            <div
+              className="relative"
+              onMouseEnter={() => handleMouseEnter("Banjir")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <img
+                src={floodlogo}
+                alt="Flood Incident"
+                className="rounded-full w-20 h-20 object-cover border-2 border-black transition-transform duration-300 ease-in-out transform hover:scale-125"
+                onClick={() => {
+                  toast.success("Masuk Ke Report Form");
+                  setTimeout(() => {
+                    navigate("/report-form");
+                  }, 2000);
+                }}
+              />
+              {hovered === "Banjir" && (
+                <div
+                  className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-opacity-70 bg-black rounded-full text-white"
+                  style={{ pointerEvents: "none" }}
+                >
+                  Flood
+                </div>
+              )}
+            </div>
+            <div
+              className="relative"
+              onMouseEnter={() => handleMouseEnter("Animal")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <img
+                src={animallogo}
+                alt="Wild Animal Incident"
+                className="rounded-full w-20 h-20 object-cover border-2 border-black transition-transform duration-300 ease-in-out transform hover:scale-125"
+                onClick={() => {
+                  toast.success("Masuk Ke Report Form");
+                  setTimeout(() => {
+                    navigate("/report-form");
+                  }, 2000);
+                }}
+              />
+              {hovered === "Animal" && (
+                <div
+                  className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-opacity-70 bg-black rounded-full text-white text-center"
+                  style={{ pointerEvents: "none" }}
+                >
+                  Wild Animal
+                </div>
+              )}
+            </div>
+            <div
+              className="relative"
+              onMouseEnter={() => handleMouseEnter("Crash")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <img
+                src={crashlogo}
+                alt="Crash Incident"
+                className="rounded-full w-20 h-20 object-cover border-2 border-black transition-transform duration-300 ease-in-out transform hover:scale-125"
+                onClick={() => {
+                  toast.success("Masuk Ke Report Form");
+                  setTimeout(() => {
+                    navigate("/report-form");
+                  }, 2000);
+                }}
+              />
+              {hovered === "Crash" && (
+                <div
+                  className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-opacity-70 bg-black rounded-full text-white text-center"
+                  style={{ pointerEvents: "none" }}
+                >
+                  Crash
+                </div>
+              )}
+            </div>
           </div>
-          <button onClick={closeModal}>Close</button>
+          <div className="flex gap-4 mt-4">
+            <img
+              src={firelogo}
+              alt="Incident Type 1"
+              className="rounded-full w-20 h-20 object-cover border-2 border-black"
+            />
+            <img
+              src={floodlogo}
+              alt="Incident Type 2"
+              className="rounded-full w-20 h-20 object-cover border-2 border-black"
+            />
+            <img
+              src={animallogo}
+              alt="Incident Type 3"
+              className="rounded-full w-20 h-20 object-cover border-2 border-black"
+            />
+            <img
+              src="image4.png"
+              alt="Incident Type 4"
+              className="rounded-full w-20 h-20 object-cover border-2 border-black"
+            />
+          </div>
+          <div className="flex justify-center items-center mt-4">
+            <button
+              className="bg-red-600 hover:bg-orange-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline "
+              onClick={closeModal}
+            >
+              Close
+            </button>
+          </div>
         </Modal>
       </div>
 
