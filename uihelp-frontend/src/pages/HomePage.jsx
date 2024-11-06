@@ -7,6 +7,10 @@ import firelogo from "../assets/fire.jpg";
 import floodlogo from "../assets/flood.png";
 import animallogo from "../assets/wildanimal.png";
 import crashlogo from "../assets/crash.png";
+import fallentree from "../assets/fallentree.png";
+import brokencar from "../assets/brokencar.jpg";
+import criminal from "../assets/criminal.png";
+import health from "../assets/health.png";
 import * as L from "leaflet";
 
 Modal.setAppElement("#root");
@@ -348,27 +352,107 @@ export default function HomePage() {
               )}
             </div>
           </div>
-          <div className="flex gap-4 mt-4">
-            <img
-              src={firelogo}
-              alt="Incident Type 1"
-              className="rounded-full w-20 h-20 object-cover border-2 border-black"
-            />
-            <img
-              src={floodlogo}
-              alt="Incident Type 2"
-              className="rounded-full w-20 h-20 object-cover border-2 border-black"
-            />
-            <img
-              src={animallogo}
-              alt="Incident Type 3"
-              className="rounded-full w-20 h-20 object-cover border-2 border-black"
-            />
-            <img
-              src="image4.png"
-              alt="Incident Type 4"
-              className="rounded-full w-20 h-20 object-cover border-2 border-black"
-            />
+          <div className="flex gap-4 py-3">
+            <div
+              className="relative"
+              onMouseEnter={() => handleMouseEnter("Tumbang")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <img
+                src={fallentree}
+                alt="Fallen Tree"
+                className="rounded-full w-20 h-20 object-cover border-2 border-black transition-transform duration-300 ease-in-out transform hover:scale-125"
+                onClick={() => {
+                  toast.success("Masuk Ke Report Form");
+                  setTimeout(() => {
+                    navigate("/report-form");
+                  }, 2000);
+                }}
+              />
+              {hovered === "Tumbang" && (
+                <div
+                  className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-opacity-70 bg-black rounded-full text-white text-center"
+                  style={{ pointerEvents: "none" }}
+                >
+                  Fallen Tree
+                </div>
+              )}
+            </div>
+            <div
+              className="relative"
+              onMouseEnter={() => handleMouseEnter("Broken")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <img
+                src={brokencar}
+                alt="Car Damaged"
+                className="rounded-full w-20 h-20 object-cover border-2 border-black transition-transform duration-300 ease-in-out transform hover:scale-125"
+                onClick={() => {
+                  toast.success("Masuk Ke Report Form");
+                  setTimeout(() => {
+                    navigate("/report-form");
+                  }, 2000);
+                }}
+              />
+              {hovered === "Broken" && (
+                <div
+                  className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-opacity-70 bg-black rounded-full text-white text-center"
+                  style={{ pointerEvents: "none" }}
+                >
+                  Broken Vehicle
+                </div>
+              )}
+            </div>
+            <div
+              className="relative"
+              onMouseEnter={() => handleMouseEnter("Criminal")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <img
+                src={criminal}
+                alt="Wild Animal Incident"
+                className="rounded-full w-20 h-20 object-cover border-2 border-black transition-transform duration-300 ease-in-out transform hover:scale-125"
+                onClick={() => {
+                  toast.success("Masuk Ke Report Form");
+                  setTimeout(() => {
+                    navigate("/report-form");
+                  }, 2000);
+                }}
+              />
+              {hovered === "Criminal" && (
+                <div
+                  className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-opacity-70 bg-black rounded-full text-white text-center"
+                  style={{ pointerEvents: "none" }}
+                >
+                  Theft Criminal
+                </div>
+              )}
+            </div>
+            <div
+              className="relative"
+              onMouseEnter={() => handleMouseEnter("Health")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <img
+                src={health}
+                alt="Crash Incident"
+                className="rounded-full w-20 h-20 object-cover border-2 border-black transition-transform duration-300 ease-in-out transform hover:scale-125"
+                onClick={() => {
+                  toast.success("Masuk Ke Report Form");
+                  setTimeout(() => {
+                    navigate("/report-form");
+                  }, 2000);
+                }}
+              />
+              {hovered === "Health" && (
+                <div
+                  className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-opacity-70 bg-black rounded-full text-white text-center"
+                  style={{ pointerEvents: "none" }}
+                >
+                  Health Emergency
+                </div>
+              )}
+            </div>
           </div>
           <div className="flex justify-center items-center mt-4">
             <button
