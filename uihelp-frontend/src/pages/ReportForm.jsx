@@ -1,62 +1,15 @@
 import React, { useState, useRef } from "react";
 
+import add_photo from '../assets/add-photo.svg'
+import close from '../assets/close.png'
+import AddPhoto from "../components/AddPhoto";
+
 const ReportForm = () => {
   const [name, setName] = useState("");
   const [selectedOption, setSelectedOption] = useState("Select an option");
   const [otherText, setOtherText] = useState("");
   const [description, setDescription] = useState("");
-  const [stream, setStream] = useState(null); // State untuk menyimpan video stream
-  const [photo, setPhoto] = useState(null); // State untuk menyimpan foto
-  const videoRef = useRef(null); // Referensi video elemen
-  const canvasRef = useRef(null); // Referensi canvas untuk foto
-
-  // Fungsi untuk memulai kamera
-  const startCamera = async () => {
-    try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-      });
-      setStream(mediaStream);
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
-      }
-    } catch (error) {
-      console.error("Error accessing camera:", error);
-    }
-  };
-
-  // Fungsi untuk mengambil foto
-  const capturePhoto = () => {
-    const canvas = canvasRef.current;
-    const video = videoRef.current;
-    const context = canvas.getContext("2d");
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const imageData = canvas.toDataURL("image/png");
-    setPhoto(imageData);
-    stopCamera(); // Menutup kamera setelah foto diambil
-  };
-
-  // Fungsi untuk menghentikan kamera
-  const stopCamera = () => {
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-      setStream(null);
-    }
-  };
-
-  // Fungsi untuk mengunggah foto dari galeri
-  const handlePhotoUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhoto(reader.result); // Menyimpan data foto dalam bentuk data URL
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  const [photoList, setPhotoList] = useState([]);
 
   const handleNameChange = (event) => {
     setName(event.target.value);
@@ -78,35 +31,32 @@ const ReportForm = () => {
   };
 
   return (
-    <div className="w-full min-h-screen flex flex-col justify-center items-center bg-[#FFFBE6] gap-5 py-20 font-sans">
-      <p className="font-bold text-5xl text-[#626F47]">Report an Accident</p>
-      <div className="border border-black shadow-lg rounded-3xl bg-[#F2EED7] w-1/2 h-fit flex flex-col px-16 py-12 gap-5">
+    <div className="w-full min-h-screen flex flex-col justify-center items-center bg-[#FFFBE6] gap-5 py-20 font-sans font-normal">
+      <p className="font-bold text-3xl lg:text-5xl text-[#626F47]">Report an Accident</p>
+      {/* Nama, Jenis Kejadian, Deskripsi kejadian */}
+      <div className="border border-gray-300 shadow-lg rounded-3xl bg-[#F2EED7] w-4/5 lg:w-1/2 h-fit flex flex-col px-8 lg:px-16 py-6 lg:py-12 gap-5">
         <div className="input flex flex-col w-full h-fit gap-2">
-          <p className="text-sm">Name</p>
+          <p className="text-sm font-semibold text-[#626F47]">Name</p>
           <input
             type="text"
-            className="border border-gray-200 rounded-md shadow-sm h-10 px-4 text-sm"
+            className="border border-gray-300 rounded-md h-10 px-4 text-sm"
             placeholder="Input Reporter Name"
             value={name}
             onChange={handleNameChange}
           />
-          <p className="text-xs text-slate-600">
-            The reporter's name must be the real name as per the resident
-            identity card.
+          <p className="text-2xs lg:text-xs text-gray-600">
+            The reporter's name must be the real name as per the resident identity card.
           </p>
         </div>
         <div className="input flex flex-col w-full h-fit gap-2">
-          <p className="text-sm">Whats Happening?</p>
+          <p className="text-sm font-semibold text-[#626F47]">What's Happening?</p>
           <select
-            className={`border border-gray-200 rounded-md shadow-sm h-10 px-4 text-sm ${
-              selectedOption == "Select an option" && "text-slate-500"
-            } `}
+            className={`border border-gray-300 rounded-md h-10 px-4 text-sm ${selectedOption === "Select an option" && "text-gray-500"
+              }`}
             value={selectedOption}
             onChange={handleSelectChange}
           >
-            <option value="" className="">
-              Select an option
-            </option>
+            <option value="">Select an option</option>
             <option value="Fire">Fire</option>
             <option value="Flood">Flood</option>
             <option value="Earthquake">Earthquake</option>
@@ -115,88 +65,113 @@ const ReportForm = () => {
           {selectedOption === "Other" && (
             <input
               type="text"
-              className="border border-gray-200 rounded-md shadow-sm h-10 px-4 text-sm mt-2"
+              className="border border-gray-300 rounded-md h-10 px-4 text-sm mt-2"
               placeholder="Please specify"
               value={otherText}
               onChange={handleOtherTextChange}
             />
           )}
-          <p className="text-xs text-slate-600">
-            Report the type of disaster you see! Select the Other option if the
-            disaster is not in the list of choices.
+          <p className="text-2xs lg:text-xs text-gray-600">
+            Report the type of disaster you see! Select the Other option if the disaster is not in the list of choices.
           </p>
         </div>
         <div className="input flex flex-col w-full h-fit gap-2">
-          <p className="text-sm">Accident Description</p>
+          <p className="text-sm font-semibold text-[#626F47]">Accident Description</p>
           <textarea
-            className="border border-gray-200 rounded-md shadow-sm h-32 px-4 py-2 text-sm"
+            className="border border-gray-300 rounded-md h-32 px-4 py-2 text-sm"
             placeholder="I saw this incident when . . ."
             value={description}
             onChange={handleDescriptionChange}
           />
-          <p className="text-xs text-slate-600">
-            Describe the disaster that occurred briefly! Include the important
-            information needed!
+          <p className="text-2xs lg:text-xs text-gray-600">
+            Describe the disaster that occurred briefly! Include the important information needed!
           </p>
         </div>
-        {/* Opsi Kamera dan Unggah Foto */}
-        <div className="camera-section mt-4 flex flex-col items-center gap-3">
-          {!photo && (
-            <>
-              {!stream ? (
-                <button
-                  onClick={startCamera}
-                  className="bg-blue-500 text-white px-4 py-2 rounded"
-                >
-                  Buka Kamera
-                </button>
-              ) : (
-                <div>
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    playsInline
-                    className="w-full h-auto rounded-md shadow-md"
-                  ></video>
-                  <button
-                    onClick={capturePhoto}
-                    className="bg-green-500 text-white px-4 py-2 mt-3 rounded"
-                  >
-                    Ambil Foto
-                  </button>
-                </div>
-              )}
-              <label className="bg-gray-500 text-white px-4 py-2 mt-3 rounded cursor-pointer">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handlePhotoUpload}
-                  className="hidden"
-                />
-                Unggah Foto dari Galeri
-              </label>
-            </>
-          )}
-          {photo && (
-            <div>
-              <img
-                src={photo}
-                alt="Captured or Uploaded"
-                className="w-full h-auto rounded-md shadow-md"
-              />
-              <button
-                onClick={() => setPhoto(null)}
-                className="bg-red-500 text-white px-4 py-2 mt-3 rounded"
-              >
-                Hapus Foto
-              </button>
-            </div>
-          )}
-          <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
-        </div>
+
       </div>
+
+      {/* Foto Kejadian, Lokasi Kejadian */}
+      <div className="border border-gray-300 shadow-lg rounded-3xl bg-[#F2EED7] w-4/5 lg:w-1/2 h-fit flex flex-col px-8 lg:px-16 py-6 lg:py-12 gap-3">
+        <p className="text-sm font-semibold text-[#626F47]">Prove the accident by adding some photos about the location</p>
+        <div className="bg-white p-8 rounded-md flex justify-between gap-2 lg:gap-5 w-full h-fit border">
+          {/* <div className="camera-section mt-4 flex flex-col items-center gap-3 border">
+            {!photo && (
+              <>
+                {!stream ? (
+                  <button
+                    onClick={startCamera}
+                    className="bg-[#ff4b4b] text-white px-4 py-2 rounded"
+                  >
+                    Open Camera
+                  </button>
+                ) : (
+                  <div>
+                    <video
+                      ref={videoRef}
+                      autoPlay
+                      playsInline
+                      className="w-full h-auto rounded-md shadow-md"
+                    ></video>
+                    <button
+                      onClick={capturePhoto}
+                      className="bg-[#ff4b4b] text-white px-4 py-2 mt-3 rounded"
+                    >
+                      Capture Photo
+                    </button>
+                  </div>
+                )}
+                <label className="bg-[#ff4b4b] text-white px-4 py-2 mt-3 rounded cursor-pointer">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoUpload}
+                    className="hidden"
+                  />
+                  Upload from Gallery
+                </label>
+              </>
+            )}
+            {photo && (
+              <div>
+                <img
+                  src={photo}
+                  alt="Captured or Uploaded"
+                  className="w-full h-auto rounded-md shadow-md"
+                />
+                <button
+                  onClick={() => setPhoto(null)}
+                  className="bg-[#ff4b4b] text-white px-4 py-2 mt-3 rounded"
+                >
+                  Remove Photo
+                </button>
+              </div>
+            )}
+            <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
+          </div> */}
+          <div className="bg-[#D9D9D9] h-20 lg:h-28 flex justify-center items-center rounded-md p-4">
+            <img src={add_photo} alt="Add Photo" />
+          </div>
+          <div className="photo-list w-full h-fit flex flex-col gap-1">
+            {photoList.map((photo, i) => (
+              <div
+                key={i} // Menambahkan key unik
+                className="bg-[#F2EED7] rounded-sm border py-1 px-2 h-fit w-full flex justify-between items-center gap-2"
+              >
+                <p className="text-2xs text-[#626F47] bg-white rounded-md px-1 overflow-clip w-full">
+                  {photo}
+                </p>
+                <img src={close} className="w-3 h-3 cursor-pointer" alt="Delete Image" />
+              </div>
+            ))}
+          </div>
+        </div>
+        <p className="text-2xs lg:text-xs text-gray-600">It is mandatory to add photos of evidence of the disaster. Tell us about the disaster!</p>
+      </div>
+
+      <AddPhoto />
+
       <div className="flex justify-end w-1/2">
-        <button className="bg-blue-500 text-white text-lg font-bold px-8 py-1 rounded-lg shadow-lg border border-gray-600 hover:bg-blue-600 transition duration-300">
+        <button className="bg-[#ff4b4b] text-white text-lg font-bold px-8 py-1 rounded-lg shadow-lg border border-gray-400 hover:bg-[#e04343] transition duration-300">
           Next
         </button>
       </div>
