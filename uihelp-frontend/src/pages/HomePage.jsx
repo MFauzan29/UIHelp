@@ -169,9 +169,27 @@ function RealTimeClock() {
 }
 
 export default function HomePage() {
+  // useEffect(() => {
+  //   axios
+  //     .get("http://localhost:5173/")
+  //     .then((res) => {
+  //       const response = res.data;
+  //       if (response.state) {
+  //         toast.success(response.message);
+  //         setItems(response.payload);
+  //       } else {
+  //       }
+  //       console.log(response);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // }, []);
+
   const [positions, setPositions] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [hovered, setHovered] = useState(null);
+  const [reports, setReports] = useState([]); // Array untuk menampung laporan
   const navigate = useNavigate();
 
   const handleMouseEnter = (incidentName) => {
@@ -463,6 +481,32 @@ export default function HomePage() {
             </button>
           </div>
         </Modal>
+
+        <div class="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
+          <img
+            class="w-full h-48 object-cover"
+            src="https://via.placeholder.com/400x300"
+            alt="Foto Kejadian"
+          />
+          <div class="p-4">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-2">
+              Nama Kejadian
+            </h2>
+            <p class="text-sm text-gray-600 mb-2">
+              <span class="font-semibold">Pelapor:</span> Nama Pelapor
+            </p>
+            <p class="text-sm text-gray-600 mb-2">
+              <span class="font-semibold">Lokasi:</span> Lokasi Kejadian
+            </p>
+            <p class="text-sm text-gray-700 mb-4">
+              <span class="font-semibold">Deskripsi:</span> Deskripsi singkat
+              mengenai kejadian.
+            </p>
+            <p class="text-sm text-gray-600 mb-2">
+              <span class="font-semibold">Tipe:</span> Jenis Kejadian
+            </p>
+          </div>
+        </div>
       </div>
 
       <MapContainer
