@@ -3,12 +3,12 @@ const pool = require('../db');
 
 // Create a new report
 async function createReport(req, res) {
-    const { user_id, name, detail, types, danger, status/*, picture, location, $7, POINT($8, $9) */} = req.body;
+    const { user_id, name, detail, types,  status/*, picture, danger, location, $7, POINT($8, $9) */} = req.body;
     try {
         const result = await pool.query(
-            `INSERT INTO report (user_id, name, detail, types, danger, status) 
-            VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-            [user_id, name, detail, types, danger, status || 'not_started'/*, picture, location.lon, location.lat*/]
+            `INSERT INTO report (user_id, name, detail, types, status) 
+            VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+            [user_id, name, detail, types, status || 'not_started'/*, danger, picture, location.lon, location.lat*/]
         );
         res.status(201).json(result.rows[0]);
     } catch (error) {

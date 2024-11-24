@@ -13,6 +13,7 @@ CREATE TYPE report_type AS ENUM (
 	'Tree Fall',
 	'Car Accident',
 	'Wild Animals',
+    'Earthquake'
 	'Others'
 );
 
@@ -57,3 +58,4 @@ GRANT ALL PRIVILEGES ON TABLE report TO group7;
 GRANT USAGE, SELECT ON SEQUENCE users_id_seq TO group7;
 GRANT USAGE, SELECT ON SEQUENCE admin_id_seq TO group7;
 GRANT USAGE, SELECT ON SEQUENCE report_id_seq TO group7;
+GRANT ALL PRIVILEGES ON TYPES report_type TO group7;
