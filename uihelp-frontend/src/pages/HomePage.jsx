@@ -242,9 +242,19 @@ export default function HomePage() {
             icon={createIcon(accident.name)} // Use the dynamic icon size
           >
             <Popup>
-              <div className="w-full flex flex-col items-start">
-                <p className="font-semibold">{accident.name}</p>
+              <div className="w-full">
+                <div className="w-full flex justify-between items-center">
+                  <p className="font-semibold text-xl">{accident.name}</p>
+                  <p className={`text-sm font-semibold ${accident.status === "In Process" ? "text-yellow-500" :
+                    accident.status === "Handled" ? "text-green-500" :
+                      accident.status === "Pending" ? "text-red-500" : ""}`}>{accident.status}</p>
+                </div>
                 <p className="font-normal text-sm">{accident.desc}</p>
+                <img src={accident.img} alt="" />
+                <div className="w-full flex items-center gap-2 mt-2">
+                  <p>Reported at:</p>
+                  <p className="font-normal">{accident.dateTime}</p>
+                </div>
               </div>
             </Popup>
           </Marker>
