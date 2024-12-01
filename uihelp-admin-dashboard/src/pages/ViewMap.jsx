@@ -31,7 +31,7 @@ const ViewMap = () => {
         {
             name: "Kebakaran",
             desc: "Semuanya begitu cepat. Tidak ada korban jiwa, namun ada beberapa kerusakan bangunan",
-            dateTime: "10-12-2024 10:20",
+            dateTime: "11-12-2024 10:20",
             status: "In Process",
             lat: -6.361,
             lng: 106.826,
@@ -58,7 +58,7 @@ const ViewMap = () => {
         {
             name: "Darurat Kesehatan",
             desc: "Semuanya begitu cepat. Tidak ada korban jiwa, namun ada beberapa kerusakan bangunan",
-            dateTime: "10-12-2024 10:20",
+            dateTime: "1-11-2024 10:20",
             status: "Handled",
             lat: -6.363,
             lng: 106.824,

@@ -5,7 +5,6 @@ import map from '../assets/map.png'
 import manage from '../assets/manage.png'
 import statistic from '../assets/statistic.png'
 import logout_icon from '../assets/logout.svg'
-import { ChevronFirst, ChevronLast } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 const SideBar = () => {
@@ -76,7 +75,6 @@ const SideBar = () => {
                     <img src={logout_icon} className='scale-90 lg:scale-100' alt="" />
                     <p className={`text-danger text-base lg:text-lg transition-all duration-300 ${!expanded && "hidden"}`}>Logout</p>
                 </div>
-
             </div>
         </div>
     )
