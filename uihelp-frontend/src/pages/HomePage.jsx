@@ -1,8 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Polyline } from "react-leaflet";
+import React, { useState } from "react";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import Modal from "react-modal";
+
+import * as L from "leaflet";
+
+import RealTimeClock from "../components/RealTimeClock";
+import ReportButton from "../components/ReportButton";
+
+// asset imports
 import firelogo from "../assets/fire.jpg";
 import floodlogo from "../assets/flood.png";
 import animallogo from "../assets/wildanimal.png";
@@ -11,286 +18,166 @@ import fallentree from "../assets/fallentree.png";
 import brokencar from "../assets/brokencar.jpg";
 import criminal from "../assets/criminal.png";
 import health from "../assets/health.png";
-import * as L from "leaflet";
+import kebakaran_ex from '../assets/kebarakan-ex.jpg'
+import kecelakaan_ex from '../assets/kecelakaan-ex.jpg'
+import arrow from '../assets/arrow.svg'
 
 Modal.setAppElement("#root");
 
-const getXmlString = () => {
-  return `<osm version="0.6" generator="openstreetmap-cgimap 2.0.1 (2051430 spike-08.openstreetmap.org)" copyright="OpenStreetMap and contributors" attribution="http://www.openstreetmap.org/copyright" license="http://opendatacommons.org/licenses/odbl/1-0/">
-<way id="401969868" visible="true" version="11" changeset="146564185" timestamp="2024-01-22T18:05:22Z" user="Farras" uid="136807">
-<nd ref="4043765377"/>
-<nd ref="8682054580"/>
-<nd ref="8682054597"/>
-<nd ref="8682054581"/>
-<nd ref="8682054582"/>
-<nd ref="8682054583"/>
-<nd ref="8682054584"/>
-<nd ref="8682054585"/>
-<nd ref="8682054586"/>
-<nd ref="8682054587"/>
-<nd ref="8682054588"/>
-<nd ref="8682054589"/>
-<nd ref="8682054590"/>
-<nd ref="8682054591"/>
-<nd ref="8682054592"/>
-<nd ref="8682054593"/>
-<nd ref="8682054579"/>
-<nd ref="8682054578"/>
-<nd ref="8682054577"/>
-<nd ref="9001064904"/>
-<nd ref="9001064905"/>
-<nd ref="9001064906"/>
-<nd ref="7953564740"/>
-<nd ref="7953564726"/>
-<nd ref="7953564727"/>
-<nd ref="1340723552"/>
-<nd ref="1340723557"/>
-<nd ref="1340723566"/>
-<nd ref="1340723577"/>
-<nd ref="1340723568"/>
-<nd ref="9001064907"/>
-<nd ref="9001064908"/>
-<nd ref="8682054594"/>
-<nd ref="8682054545"/>
-<nd ref="8682054547"/>
-<nd ref="8682054596"/>
-<nd ref="5006589198"/>
-<nd ref="8682054598"/>
-<nd ref="8682054599"/>
-<nd ref="8682054600"/>
-<nd ref="4043765374"/>
-<nd ref="8682054603"/>
-<nd ref="8682054604"/>
-<nd ref="2975838074"/>
-<nd ref="8682054602"/>
-<nd ref="8682054601"/>
-<nd ref="8682054605"/>
-<nd ref="2975832612"/>
-<nd ref="5006575188"/>
-<nd ref="6869569998"/>
-<nd ref="8682054606"/>
-<nd ref="8682054607"/>
-<nd ref="5006561068"/>
-<nd ref="5006561053"/>
-<nd ref="8682054608"/>
-<nd ref="8682054609"/>
-<nd ref="4319854733"/>
-<nd ref="4043765345"/>
-<nd ref="4319854732"/>
-<nd ref="8682054610"/>
-<nd ref="8682054611"/>
-<nd ref="4043765348"/>
-<nd ref="8682054612"/>
-<nd ref="8682054614"/>
-<nd ref="8682054613"/>
-<nd ref="4043765349"/>
-<nd ref="8682054615"/>
-<nd ref="8682054616"/>
-<nd ref="4043765350"/>
-<nd ref="4043765353"/>
-<nd ref="4043765355"/>
-<nd ref="8682061217"/>
-<nd ref="4043765347"/>
-<nd ref="8682061221"/>
-<nd ref="8682061220"/>
-<nd ref="8682061219"/>
-<nd ref="8682061218"/>
-<nd ref="4043826543"/>
-<nd ref="4043765346"/>
-<nd ref="4043765352"/>
-<nd ref="4043765354"/>
-<nd ref="4043765356"/>
-<nd ref="4043765358"/>
-<nd ref="4043765359"/>
-<nd ref="4043765360"/>
-<nd ref="4043765361"/>
-<nd ref="4043765362"/>
-<nd ref="4043765363"/>
-<nd ref="4043765364"/>
-<nd ref="4043765365"/>
-<nd ref="8682061222"/>
-<nd ref="8682061223"/>
-<nd ref="4043765366"/>
-<nd ref="4043765367"/>
-<nd ref="8682061224"/>
-<nd ref="4043765368"/>
-<nd ref="4043765369"/>
-<nd ref="8682061225"/>
-<nd ref="4043765370"/>
-<nd ref="4043765372"/>
-<nd ref="4043765371"/>
-<nd ref="4043765373"/>
-<nd ref="4043765375"/>
-<nd ref="11540594432"/>
-<nd ref="4043765376"/>
-<nd ref="8682061226"/>
-<nd ref="8682061227"/>
-<nd ref="8682061229"/>
-<nd ref="8682061228"/>
-<nd ref="4043765377"/>
-<tag k="addr:city" v="Depok, West Java"/>
-<tag k="addr:postcode" v="16424"/>
-<tag k="addr:street" v="Jalan Prof. Dr. Sudjono D Pusponegoro"/>
-<tag k="amenity" v="university"/>
-<tag k="name" v="Universitas Indonesia"/>
-<tag k="operator" v="Universitas Indonesia"/>
-<tag k="short_name" v="UI"/>
-<tag k="website" v="https://www.ui.ac.id/"/>
-<tag k="wikidata" v="Q534515"/>
-<tag k="wikipedia" v="id:Universitas Indonesia"/>
-</way>
-</osm>`;
-};
-
-function RealTimeClock() {
-  const [time, setTime] = useState(new Date());
-
-  useEffect(() => {
-    const timer = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  return (
-    <div
-      style={{
-        fontSize: "1.5rem",
-        color: "#333",
-        fontWeight: "bold",
-        backgroundColor: "#FFF",
-        padding: "10px 20px",
-        borderRadius: "8px",
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-        textAlign: "center",
-      }}
-    >
-      {time.toLocaleTimeString()} {/* Format waktu sesuai keinginan */}
-    </div>
-  );
-}
-
 export default function HomePage() {
-  // useEffect(() => {
-  //   axios
-  //     .get("http://localhost:5173/")
-  //     .then((res) => {
-  //       const response = res.data;
-  //       if (response.state) {
-  //         toast.success(response.message);
-  //         setItems(response.payload);
-  //       } else {
-  //       }
-  //       console.log(response);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // }, []);
-
   const [positions, setPositions] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [hovered, setHovered] = useState(null);
-  const [reports, setReports] = useState([]); // Array untuk menampung laporan
   const navigate = useNavigate();
 
-  const handleMouseEnter = (incidentName) => {
-    setHovered(incidentName);
+  const handleMouseEnter = (temp) => setHovered(temp);
+  const handleMouseLeave = () => setHovered(null);
+
+  const openModal = () => setModalIsOpen(true);
+  const closeModal = () => setModalIsOpen(false);
+
+  // Toggle sidebar
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+
+  // Handle accident card click
+  const handleAccidentClick = (accident) => {
+    setSelectedAccident(accident); // Update selected accident
   };
 
-  const handleMouseLeave = () => {
-    setHovered(null);
-  };
+  // Create icon function for regular and selected markers
+  const createIcon = (accidentName) => {
+    let iconUrl;
+    let iconSize = [30, 30]; // Default size
 
-  useEffect(() => {
-    // Parsing data dari XML
-    const parser = new DOMParser();
-    const xmlString = getXmlString();
-    const xmlDoc = parser.parseFromString(xmlString, "application/xml");
+    if (selectedAccident && selectedAccident.name === accidentName) {
+      iconSize = [50, 50]; // Set to a larger size when selected
+    }
 
-    // Ambil node ref dari <way>
-    const ndRefs = Array.from(xmlDoc.querySelectorAll("way nd")).map((nd) =>
-      nd.getAttribute("ref")
-    );
-    const coordinates = ndRefs.map((ref) => {
-      return [-6.361043581175633, 106.82687215519378]; // Sesuaikan dengan koordinat asli dari node `ref`
+    switch (accidentName) {
+      case "Kebakaran":
+        iconUrl = firelogo;
+        break;
+      case "Banjir":
+        iconUrl = floodlogo;
+        break;
+      case "Binatang Buas":
+        iconUrl = animallogo;
+        break;
+      case "Laka Lantas":
+        iconUrl = crashlogo;
+        break;
+      case "Pohon Tumbang":
+        iconUrl = fallentree;
+        break;
+      case "Kendaraan Rusak":
+        iconUrl = brokencar;
+        break;
+      case "Pencurian":
+        iconUrl = criminal;
+        break;
+      case "Darurat Kesehatan":
+        iconUrl = health;
+        break;
+      default:
+        iconUrl = firelogo;
+    }
+
+    return new L.Icon({
+      iconUrl,
+      iconSize, // Use the dynamic size based on selection
     });
-
-    setPositions(coordinates);
-  }, []);
-
-  const openModal = () => {
-    setModalIsOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalIsOpen(false);
   };
 
   return (
-    <div className="w-auto h-dvh flex justify-center items-center bg-[#FFFBE6] gap-4 py-14 font-sans ">
-      <div className="absolute top-4 left-4  space-y-2">
-        <RealTimeClock />
-        <button
-          className="bg-red-600 hover:bg-orange-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          type="button"
-          onClick={
-            openModal
-            //   {
-            //   toast.success("Masuk Ke Report Form");
-            //   setTimeout(() => {
-            //     navigate("/report-form");
-            //   }, 2000);
-            // }
-          }
-        >
-          Report Accident
-        </button>
+    <div className="relative w-auto h-screen flex justify-center items-center bg-[#FFFBE6] font-sans">
+      <RealTimeClock />
+      <ReportButton onClick={openModal} />
 
-        <Modal
-          isOpen={modalIsOpen}
-          onRequestClose={closeModal}
-          style={{
-            content: {
-              top: "50%",
-              left: "50%",
-              right: "auto",
-              bottom: "auto",
-              transform: "translate(-50%, -50%)",
-              backgroundColor: "white",
-              borderRadius: "15px",
-              padding: "20px",
-              zIndex: 1000, // Pastikan modal berada di atas
-            },
-            overlay: {
-              backgroundColor: "rgba(0, 0, 0, 0.75)", // Latar belakang gelap
-              zIndex: 999, // Overlay di bawah modal
-            },
-          }}
-        >
-          <h2 className="text-center font-bold py-3">Report Your Incident</h2>
-          {/* Tambahkan gambar atau konten lainnya di sini */}
-          <div className="flex gap-4">
+      <div className={`absolute top-20 left-3 z-10 shadow-lg bg-white rounded-xl transition-all duration-300 ease-in-out ${sidebarOpen ? 'w-[26rem]' : 'w-56'}`}>
+        <div className="flex justify-between items-center">
+          <p className={`ml-5 py-2 font-semibold text-xl w-full border-b-2 ${sidebarOpen ? 'block' : 'block'}`}>Daftar Insiden</p>
+          <img
+            src={arrow}
+            className={`rotate-${sidebarOpen ? '180' : '0'} cursor-pointer transition-transform duration-700 ease-in-out`}
+            alt=""
+            onClick={toggleSidebar}
+          />
+        </div>
+
+        <div className={`w-full max-h-[26rem] overflow-scroll ${sidebarOpen ? '' : 'hidden'}`}>
+          {happeningAccidents.map((accident, i) => (
+            <div key={i} className="w-full h-26 border-b py-2 px-5 flex justify-between items-center gap-2 cursor-pointer" onClick={() => handleAccidentClick(accident)}>
+              <div className="foto-kejadian w-2/5 h-20 rounded-md overflow-hidden">
+                <img src={accident.img} className="w-full h-full object-cover" alt="" />
+              </div>
+              <div className="w-3/5 h-full py-2 pl-3 flex flex-col items-start">
+                <div className="w-full flex justify-between">
+                  <p className="font-semibold text-base">{accident.name}</p>
+                  <p className={`font-normal text-xs ${accident.status === "In Process" ? "text-yellow-500" :
+                    accident.status === "Handled" ? "text-green-500" :
+                      accident.status === "Pending" ? "text-red-500" : ""}`}>{accident.status}</p>
+                </div>
+
+                <p alt={accident.desc} className="text-xs text-slate-500 font-normal italic overflow-hidden text-ellipsis text-justify">
+                  {accident.desc}
+                </p>
+                <div className="w-full flex justify-end font-normal text-[0.7rem] mt-2">
+                  {accident.dateTime}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Modal */}
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        style={{
+          content: {
+            top: "50%",
+            left: "50%",
+            right: "auto",
+            bottom: "auto",
+            transform: "translate(-50%, -50%)",
+            backgroundColor: "white",
+            borderRadius: "15px",
+            padding: "20px",
+            zIndex: 1000,
+          },
+          overlay: {
+            backgroundColor: "rgba(0, 0, 0, 0.75)",
+            zIndex: 999,
+          },
+        }}
+      >
+        <h2 className="text-center font-bold py-3">Report Your Incident</h2>
+        <div className="grid grid-cols-4 gap-x-2 gap-y-4">
+          {accidents.map((accident, i) => (
             <div
               className="relative"
-              onMouseEnter={() => handleMouseEnter("Kebakaran")}
+              onMouseEnter={() => handleMouseEnter(accident.name)}
               onMouseLeave={handleMouseLeave}
+              key={i}
             >
               <img
-                src={firelogo}
-                alt="Fire Incident"
+                src={accident.img}
+                alt={accident.name + "Accident"}
                 className="rounded-full w-20 h-20 object-cover border-2 border-black transition-transform duration-300 ease-in-out transform hover:scale-125"
                 onClick={() => {
                   toast.success("Masuk Ke Report Form");
                   setTimeout(() => {
-                    navigate("/report-form");
+                    navigate("/report-form", { state: { accidentName: accident.name } });
                   }, 2000);
                 }}
               />
-              {hovered === "Kebakaran" && (
+              {hovered === accident.name && (
                 <div
-                  className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-opacity-70 bg-black rounded-full text-white"
+                  className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-opacity-70 bg-black rounded-full px-1"
                   style={{ pointerEvents: "none" }}
                 >
-                  Fire
+                  <p className="text-white text-center">{accident.name}</p>
                 </div>
               )}
             </div>
@@ -481,54 +368,53 @@ export default function HomePage() {
             </button>
           </div>
         </Modal>
-
-        <div class="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
-          <img
-            class="w-full h-48 object-cover"
-            src="https://via.placeholder.com/400x300"
-            alt="Foto Kejadian"
-          />
-          <div class="p-4">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-2">
-              Nama Kejadian
-            </h2>
-            <p class="text-sm text-gray-600 mb-2">
-              <span class="font-semibold">Pelapor:</span> Nama Pelapor
-            </p>
-            <p class="text-sm text-gray-600 mb-2">
-              <span class="font-semibold">Lokasi:</span> Lokasi Kejadian
-            </p>
-            <p class="text-sm text-gray-700 mb-4">
-              <span class="font-semibold">Deskripsi:</span> Deskripsi singkat
-              mengenai kejadian.
-            </p>
-            <p class="text-sm text-gray-600 mb-2">
-              <span class="font-semibold">Tipe:</span> Jenis Kejadian
-            </p>
-          </div>
-        </div>
       </div>
 
+      {/* Map */}
       <MapContainer
         center={[-6.361043581175633, 106.82687215519378]}
         zoom={14.5}
         style={{
-          width: "70%",
-          maxWidth: "600px",
-          height: "700px",
+          width: "100%",
+          height: "100%",
           borderRadius: "15px",
           overflow: "hidden",
+          zIndex: 0,
         }}
-        dragging={false} // Disable dragging
-        zoomControl={false} // Disable zoom control buttons
-        scrollWheelZoom={false} // Disable zooming with scroll wheel
-        doubleClickZoom={false} // Disable zooming with double-click
+        dragging={true} // Aktifkan dragging
+        zoomControl={true} // Aktifkan kontrol zoom
+        scrollWheelZoom={true} // Aktifkan zoom dengan scroll
+        doubleClickZoom={true} // Aktifkan zoom dengan double click
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
-        <Polyline positions={positions} color="blue" />
+        {/* Static Markers */}
+        {happeningAccidents.map((accident, i) => (
+          <Marker
+            key={i}
+            position={[accident.lat, accident.lng]}
+            icon={createIcon(accident.name)} // Use the dynamic icon size
+          >
+            <Popup>
+              <div className="w-full">
+                <div className="w-full flex justify-between items-center">
+                  <p className="font-semibold text-xl">{accident.name}</p>
+                  <p className={`text-sm font-semibold ${accident.status === "In Process" ? "text-yellow-500" :
+                    accident.status === "Handled" ? "text-green-500" :
+                      accident.status === "Pending" ? "text-red-500" : ""}`}>{accident.status}</p>
+                </div>
+                <p className="font-normal text-sm">{accident.desc}</p>
+                <img src={accident.img} alt="" />
+                <div className="w-full flex items-center gap-2 mt-2">
+                  <p>Reported at:</p>
+                  <p className="font-normal">{accident.dateTime}</p>
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
       </MapContainer>
 
       <ToastContainer
