@@ -25,60 +25,9 @@ import arrow from "../assets/arrow.svg";
 Modal.setAppElement("#root");
 
 export default function HomePage() {
-  const accidents = [
-    { name: "Kebakaran", img: firelogo },
-    { name: "Banjir", img: floodlogo },
-    { name: "Binatang Buas", img: animallogo },
-    { name: "Laka Lantas", img: crashlogo },
-    { name: "Pohon Tumbang", img: fallentree },
-    { name: "Kendaraan Rusak", img: brokencar },
-    { name: "Pencurian", img: criminal },
-    { name: "Darurat Kesehatan", img: health },
-  ];
-
-  const happeningAccidents = [
-    {
-      name: "Kebakaran",
-      desc: "Semuanya begitu cepat. Tidak ada korban jiwa, namun ada beberapa kerusakan bangunan",
-      dateTime: "10-12-2024 10:20",
-      status: "In Process",
-      lat: -6.361,
-      lng: 106.826,
-      img: kebakaran_ex,
-    },
-    {
-      name: "Laka Lantas",
-      desc: "Semuanya begitu cepat. Tidak ada korban jiwa, namun ada beberapa kerusakan bangunan",
-      dateTime: "10-12-2024 10:20",
-      status: "Pending",
-      lat: -6.362,
-      lng: 106.827,
-      img: kecelakaan_ex,
-    },
-    {
-      name: "Binatang Buas",
-      desc: "Semuanya begitu cepat. Tidak ada korban jiwa, namun ada beberapa kerusakan bangunan",
-      dateTime: "10-12-2024 10:20",
-      status: "In Process",
-      lat: -6.363,
-      lng: 106.828,
-      img: kebakaran_ex,
-    },
-    {
-      name: "Darurat Kesehatan",
-      desc: "Semuanya begitu cepat. Tidak ada korban jiwa, namun ada beberapa kerusakan bangunan",
-      dateTime: "10-12-2024 10:20",
-      status: "Handled",
-      lat: -6.363,
-      lng: 106.824,
-      img: kebakaran_ex,
-    },
-  ];
-
+  const [positions, setPositions] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [hovered, setHovered] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false); // State for controlling sidebar visibility
-  const [selectedAccident, setSelectedAccident] = useState(null); // State for selected accident
   const navigate = useNavigate();
 
   const handleMouseEnter = (temp) => setHovered(temp);
@@ -256,9 +205,7 @@ export default function HomePage() {
                 onClick={() => {
                   toast.success("Masuk Ke Report Form");
                   setTimeout(() => {
-                    navigate("/report-form", {
-                      state: { accidentName: accident.name },
-                    });
+                    navigate("/report-form", { state: { accidentName: accident.name } });
                   }, 2000);
                 }}
               />
@@ -271,17 +218,194 @@ export default function HomePage() {
                 </div>
               )}
             </div>
-          ))}
-        </div>
-        <div className="flex justify-center items-center mt-4">
-          <button
-            className="bg-red-600 hover:bg-orange-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            onClick={closeModal}
-          >
-            Close
-          </button>
-        </div>
-      </Modal>
+            <div
+              className="relative"
+              onMouseEnter={() => handleMouseEnter("Banjir")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <img
+                src={floodlogo}
+                alt="Flood Incident"
+                className="rounded-full w-20 h-20 object-cover border-2 border-black transition-transform duration-300 ease-in-out transform hover:scale-125"
+                onClick={() => {
+                  toast.success("Masuk Ke Report Form");
+                  setTimeout(() => {
+                    navigate("/report-form");
+                  }, 2000);
+                }}
+              />
+              {hovered === "Banjir" && (
+                <div
+                  className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-opacity-70 bg-black rounded-full text-white"
+                  style={{ pointerEvents: "none" }}
+                >
+                  Flood
+                </div>
+              )}
+            </div>
+            <div
+              className="relative"
+              onMouseEnter={() => handleMouseEnter("Animal")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <img
+                src={animallogo}
+                alt="Wild Animal Incident"
+                className="rounded-full w-20 h-20 object-cover border-2 border-black transition-transform duration-300 ease-in-out transform hover:scale-125"
+                onClick={() => {
+                  toast.success("Masuk Ke Report Form");
+                  setTimeout(() => {
+                    navigate("/report-form");
+                  }, 2000);
+                }}
+              />
+              {hovered === "Animal" && (
+                <div
+                  className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-opacity-70 bg-black rounded-full text-white text-center"
+                  style={{ pointerEvents: "none" }}
+                >
+                  Wild Animal
+                </div>
+              )}
+            </div>
+            <div
+              className="relative"
+              onMouseEnter={() => handleMouseEnter("Crash")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <img
+                src={crashlogo}
+                alt="Crash Incident"
+                className="rounded-full w-20 h-20 object-cover border-2 border-black transition-transform duration-300 ease-in-out transform hover:scale-125"
+                onClick={() => {
+                  toast.success("Masuk Ke Report Form");
+                  setTimeout(() => {
+                    navigate("/report-form");
+                  }, 2000);
+                }}
+              />
+              {hovered === "Crash" && (
+                <div
+                  className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-opacity-70 bg-black rounded-full text-white text-center"
+                  style={{ pointerEvents: "none" }}
+                >
+                  Crash
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="flex gap-4 py-3">
+            <div
+              className="relative"
+              onMouseEnter={() => handleMouseEnter("Tumbang")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <img
+                src={fallentree}
+                alt="Fallen Tree"
+                className="rounded-full w-20 h-20 object-cover border-2 border-black transition-transform duration-300 ease-in-out transform hover:scale-125"
+                onClick={() => {
+                  toast.success("Masuk Ke Report Form");
+                  setTimeout(() => {
+                    navigate("/report-form");
+                  }, 2000);
+                }}
+              />
+              {hovered === "Tumbang" && (
+                <div
+                  className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-opacity-70 bg-black rounded-full text-white text-center"
+                  style={{ pointerEvents: "none" }}
+                >
+                  Fallen Tree
+                </div>
+              )}
+            </div>
+            <div
+              className="relative"
+              onMouseEnter={() => handleMouseEnter("Broken")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <img
+                src={brokencar}
+                alt="Car Damaged"
+                className="rounded-full w-20 h-20 object-cover border-2 border-black transition-transform duration-300 ease-in-out transform hover:scale-125"
+                onClick={() => {
+                  toast.success("Masuk Ke Report Form");
+                  setTimeout(() => {
+                    navigate("/report-form");
+                  }, 2000);
+                }}
+              />
+              {hovered === "Broken" && (
+                <div
+                  className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-opacity-70 bg-black rounded-full text-white text-center"
+                  style={{ pointerEvents: "none" }}
+                >
+                  Broken Vehicle
+                </div>
+              )}
+            </div>
+            <div
+              className="relative"
+              onMouseEnter={() => handleMouseEnter("Criminal")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <img
+                src={criminal}
+                alt="Wild Animal Incident"
+                className="rounded-full w-20 h-20 object-cover border-2 border-black transition-transform duration-300 ease-in-out transform hover:scale-125"
+                onClick={() => {
+                  toast.success("Masuk Ke Report Form");
+                  setTimeout(() => {
+                    navigate("/report-form");
+                  }, 2000);
+                }}
+              />
+              {hovered === "Criminal" && (
+                <div
+                  className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-opacity-70 bg-black rounded-full text-white text-center"
+                  style={{ pointerEvents: "none" }}
+                >
+                  Theft Criminal
+                </div>
+              )}
+            </div>
+            <div
+              className="relative"
+              onMouseEnter={() => handleMouseEnter("Health")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <img
+                src={health}
+                alt="Crash Incident"
+                className="rounded-full w-20 h-20 object-cover border-2 border-black transition-transform duration-300 ease-in-out transform hover:scale-125"
+                onClick={() => {
+                  toast.success("Masuk Ke Report Form");
+                  setTimeout(() => {
+                    navigate("/report-form");
+                  }, 2000);
+                }}
+              />
+              {hovered === "Health" && (
+                <div
+                  className="absolute top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-opacity-70 bg-black rounded-full text-white text-center"
+                  style={{ pointerEvents: "none" }}
+                >
+                  Health Emergency
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="flex justify-center items-center mt-4">
+            <button
+              className="bg-red-600 hover:bg-orange-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline "
+              onClick={closeModal}
+            >
+              Close
+            </button>
+          </div>
+        </Modal>
+      </div>
 
       {/* Map */}
       <MapContainer
