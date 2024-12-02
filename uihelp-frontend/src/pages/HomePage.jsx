@@ -39,9 +39,9 @@ export default function HomePage() {
 
 
   const happeningAccidents = [
-    { name: "Kebakaran", desc: "Semuanya begitu cepat. Tidak ada korban jiwa, namun ada beberapa kerusakan bangunan", dateTime: "10-12-2024 10:20", status: "In Process", lat: -6.361, lng: 106.826, img: kebakaran_ex },
+    { name: "Kebakaran", desc: "Semuanya begitu cepat. Tidak ada korban jiwa, namun ada beberapa kerusakan bangunan", dateTime: "10-12-2024 10:20", status: "In Progress", lat: -6.361, lng: 106.826, img: kebakaran_ex },
     { name: "Laka Lantas", desc: "Semuanya begitu cepat. Tidak ada korban jiwa, namun ada beberapa kerusakan bangunan", dateTime: "10-12-2024 10:20", status: "Pending", lat: -6.362, lng: 106.827, img: kecelakaan_ex },
-    { name: "Binatang Buas", desc: "Semuanya begitu cepat. Tidak ada korban jiwa, namun ada beberapa kerusakan bangunan", dateTime: "10-12-2024 10:20", status: "In Process", lat: -6.363, lng: 106.828, img: kebakaran_ex },
+    { name: "Binatang Buas", desc: "Semuanya begitu cepat. Tidak ada korban jiwa, namun ada beberapa kerusakan bangunan", dateTime: "10-12-2024 10:20", status: "In Progress", lat: -6.363, lng: 106.828, img: kebakaran_ex },
     { name: "Darurat Kesehatan", desc: "Semuanya begitu cepat. Tidak ada korban jiwa, namun ada beberapa kerusakan bangunan", dateTime: "10-12-2024 10:20", status: "Handled", lat: -6.363, lng: 106.824, img: kebakaran_ex },
   ];
 
@@ -134,7 +134,7 @@ export default function HomePage() {
               <div className="w-3/5 h-full py-2 pl-3 flex flex-col items-start">
                 <div className="w-full flex justify-between">
                   <p className="font-semibold text-base">{accident.name}</p>
-                  <p className={`font-normal text-xs ${accident.status === "In Process" ? "text-yellow-500" :
+                  <p className={`font-normal text-xs ${accident.status === "In Progress" ? "text-yellow-500" :
                     accident.status === "Handled" ? "text-green-500" :
                       accident.status === "Pending" ? "text-red-500" : ""}`}>{accident.status}</p>
                 </div>
@@ -245,7 +245,7 @@ export default function HomePage() {
               <div className="w-full">
                 <div className="w-full flex justify-between items-center">
                   <p className="font-semibold text-xl">{accident.name}</p>
-                  <p className={`text-sm font-semibold ${accident.status === "In Process" ? "text-yellow-500" :
+                  <p className={`text-sm font-semibold ${accident.status === "In Progress" ? "text-yellow-500" :
                     accident.status === "Handled" ? "text-green-500" :
                       accident.status === "Pending" ? "text-red-500" : ""}`}>{accident.status}</p>
                 </div>

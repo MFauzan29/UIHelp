@@ -1,5 +1,5 @@
 // server/controllers/AdminController.js
-const pool = require('../db');
+const pool = require('../db').default;
 const bcrypt = require('bcrypt');
 
 async function login(req, res) {

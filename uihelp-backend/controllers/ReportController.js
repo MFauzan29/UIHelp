@@ -1,31 +1,45 @@
 
 const pool = require('../db');
 
+const { uploadToCloudinary } = require('../utils/uploadToCloudinary');
+
 // Create a new report
 async function createReport(req, res) {
-    const { user_id, name, detail, types, danger, status/*, picture, location, $7, POINT($8, $9) */} = req.body;
+    const { name, types, detail, picture, location } = req.body;
+    let fileUrl = null;
+
     try {
-        const result = await pool.query(
-            `INSERT INTO report (user_id, name, detail, types, danger, status) 
-            VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-            [user_id, name, detail, types, danger, status || 'not_started'/*, picture, location.lon, location.lat*/]
-        );
-        res.status(201).json(result.rows[0]);
+        // Jika gambar dalam format base64 diterima
+        if (picture) {
+            const result = await uploadToCloudinary(picture); // Mengirim gambar base64 ke Cloudinary
+            fileUrl = result.secure_url; // Mendapatkan URL aman dari respon Cloudinary
+        }
+
+        // Menyimpan data laporan ke database
+        const query = `
+        INSERT INTO report (name, types, detail, picture, location)
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING *;
+      `;
+        const values = [name, detail, types, fileUrl, location]; // Gambar disimpan sebagai URL, bukan base64
+
+        const { rows } = await pool.query(query, values);
+        res.status(201).json({ success: true, data: rows[0] });
     } catch (error) {
-        console.error('Error creating report:', error);
-        res.status(500).json({ error: 'Error creating report' });
+        res.status(500).json({ success: false, message: error.message });
     }
 }
+
 
 // Update a report by id
 async function reportUpdate(req, res) {
     const { id } = req.params;
-    const { name, detail, types, danger, status/*, picture, location*/ } = req.body;
+    const { name, detail, types, status/*, location*/ } = req.body;
     try {
         const result = await pool.query(
             `UPDATE report 
-             SET name = $1, detail = $2, types = $3, danger = $4, status = $5, updated_at = CURRENT_TIMESTAMP WHERE id = $6 RETURNING *`,
-            [name, detail, types, danger, status, /*picture, location.lon, location.lat,, picture = $6, location = POINT($7, $8),*/ id]
+             SET name = $1, detail = $2, types = $3, status = $4, updated_at = CURRENT_TIMESTAMP WHERE id = $5 RETURNING *`,
+            [name, detail, types, status, /*picture, location.lon, location.lat, = $6, location = POINT($7, $8),*/ id]
         );
         if (result.rows.length === 0) {
             res.status(404).json({ error: 'Report not found' });
@@ -45,9 +59,16 @@ async function getAllReport(req, res) {
         res.json(result.rows);
     } catch (error) {
         console.error('Error getting reports:', error);
-        res.status(500).json({ error: 'Error getting reports' });
+
+        // Kembalikan error asli untuk debugging (hanya gunakan di development)
+        res.status(500).json({
+            error: 'Error getting reports',
+            message: error.message,
+            stack: error.stack, // Informasi detail stack trace
+        });
     }
 }
+
 
 // Get report by ID
 async function getReportById(req, res) {
@@ -65,27 +86,14 @@ async function getReportById(req, res) {
     }
 }
 
-// Get all reports for a specific user
-async function getUserReport(req, res) {
-    const { user_id } = req.params;
-    try {
-        const result = await pool.query(`SELECT * FROM report WHERE user_id = $1`, [user_id]);
-        res.json(result.rows);
-    } catch (error) {
-        console.error('Error getting user reports:', error);
-        res.status(500).json({ error: 'Error getting user reports' });
-    }
-}
-
 // Delete a report by ID
 async function deleteReport(req, res) {
-    const { user_id } = req.params;
     const { id } = req.body;
-  
+
     try {
         const result = await pool.query(
-            'DELETE FROM report WHERE user_id = $1 AND id = $2 RETURNING *',
-            [user_id, id]
+            'DELETE FROM report WHERE id = $1 RETURNING *',
+            [id]
         );
         if (result.rows.length === 0) {
             res.status(404).json({ error: 'Report not found' });
@@ -103,6 +111,5 @@ module.exports = {
     reportUpdate,
     getAllReport,
     getReportById,
-    getUserReport,
     deleteReport
 };

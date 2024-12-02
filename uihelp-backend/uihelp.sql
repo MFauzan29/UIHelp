@@ -1,19 +1,12 @@
-CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR NOT NULL,
-    email VARCHAR NOT NULL CHECK (email ~* '^[^@]+@[^@]+\.[^@]+$'),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    password VARCHAR NOT NULL
-);
-
 CREATE TYPE report_type AS ENUM (
-	'Flood', 
-	'Fire', 
-	'Tree Fall',
-	'Car Accident',
-	'Wild Animals',
-	'Others'
+    'Kebakaran', 
+    'Banjir', 
+    'Binatang Buas', 
+    'Laka Lantas', 
+    'Pohon Tumbang', 
+    'Kendaraan Rusak', 
+    'Pencurian', 
+    'Darurat Kesehatan'
 );
 
 CREATE TYPE danger_degree AS ENUM (
@@ -23,21 +16,19 @@ CREATE TYPE danger_degree AS ENUM (
 );
 
 CREATE TYPE report_status AS ENUM (
-	'not_started', 
-	'in_progress', 
-	'completed'
+	'Pending', 
+	'In Progress', 
+	'Handled'
 );
 
 CREATE TABLE report (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL,
-    name VARCHAR NOT NULL,
-    detail VARCHAR,
-    types report_type NOT NULL,
-    danger danger_degree NOT NULL,
+    name TEXT NOT NULL,
+    detail TEXT NOT NULL,
+    types report_type,
     status report_status NOT NULL DEFAULT 'not_started',
-    picture VARCHAR, 
-    location POINT, 
+    picture TEXT, 
+    location TEXT, 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -51,9 +42,7 @@ CREATE TABLE admin (
     password VARCHAR NOT NULL
 );
 
-GRANT ALL PRIVILEGES ON TABLE users TO group7;
 GRANT ALL PRIVILEGES ON TABLE admin TO group7;
 GRANT ALL PRIVILEGES ON TABLE report TO group7;
-GRANT USAGE, SELECT ON SEQUENCE users_id_seq TO group7;
 GRANT USAGE, SELECT ON SEQUENCE admin_id_seq TO group7;
 GRANT USAGE, SELECT ON SEQUENCE report_id_seq TO group7;

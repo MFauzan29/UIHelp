@@ -2,24 +2,26 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const userRoutes = require('./routes/UserRoutes');
 const reportRoute = require('./routes/ReportRoutes');
 const adminRoute = require('./routes/AdminRoutes');
 const dotenv = require('dotenv');
+const pool = require('./db');  // Impor pool untuk koneksi ke database
 
 const app = express();
 const PORT = 5000;
 
-// dotenv.config();
+// dotenv.config(); // Pastikan untuk memuat variabel lingkungan dari .env
 
-// console.log(process.env.password);
+// Menguji koneksi ke database
+pool.connect()
+  .then(() => console.log('Database connected successfully'))
+  .catch((err) => console.error('Error connecting to the database:', err));
 
 app.use(cors());
-app.use(express.urlencoded({extended: true}))
+app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-//app.use('/uploads', express.static('uploads'));
-app.use('/users', userRoutes);
+// app.use('/uploads', express.static('uploads'));
 app.use('/report', reportRoute);
 app.use('/admin', adminRoute);
 
