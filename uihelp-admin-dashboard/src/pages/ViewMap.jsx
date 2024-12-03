@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import * as L from "leaflet";
 import 'leaflet/dist/leaflet.css';
+import dayjs from 'dayjs';
+
 
 // Import gambar
 import firelogo from "../assets/fire.jpg";
@@ -27,44 +30,32 @@ const ViewMap = () => {
         { name: "Darurat Kesehatan", img: health }
     ];
 
-    const happeningAccidents = [
-        {
-            name: "Kebakaran",
-            desc: "Semuanya begitu cepat. Tidak ada korban jiwa, namun ada beberapa kerusakan bangunan",
-            dateTime: "11-12-2024 10:20",
-            status: "In Process",
-            lat: -6.361,
-            lng: 106.826,
-            img: kebakaran_ex
-        },
-        {
-            name: "Laka Lantas",
-            desc: "Semuanya begitu cepat. Tidak ada korban jiwa, namun ada beberapa kerusakan bangunan",
-            dateTime: "10-12-2024 10:20",
-            status: "Pending",
-            lat: -6.362,
-            lng: 106.827,
-            img: kecelakaan_ex
-        },
-        {
-            name: "Binatang Buas",
-            desc: "Semuanya begitu cepat. Tidak ada korban jiwa, namun ada beberapa kerusakan bangunan",
-            dateTime: "10-12-2024 10:20",
-            status: "In Process",
-            lat: -6.363,
-            lng: 106.828,
-            img: kebakaran_ex
-        },
-        {
-            name: "Darurat Kesehatan",
-            desc: "Semuanya begitu cepat. Tidak ada korban jiwa, namun ada beberapa kerusakan bangunan",
-            dateTime: "1-11-2024 10:20",
-            status: "Handled",
-            lat: -6.363,
-            lng: 106.824,
-            img: kebakaran_ex
-        },
-    ];
+    const [happeningAccidents, setHappeningAccidents] = useState([]);
+
+    useEffect(() => {
+        // Fetch data from the API when the component is mounted
+        const fetchAccidents = async () => {
+            try {
+                const response = await axios.get("http://localhost:5000/report/");
+                const data = response.data;
+                const formattedData = data.map((item) => ({
+                    name: item.types,
+                    desc: item.detail,
+                    dateTime: dayjs(item.created_at).format("DD:MM:YYYY HH:mm"),
+                    status: item.status,
+                    lat: parseFloat(item.location.split(",")[0]), // Convert lat from string to float
+                    lng: parseFloat(item.location.split(",")[1]), // Convert lng from string to float
+                    img: item.picture, // Placeholder image (update as needed)
+                }));
+                setHappeningAccidents(formattedData);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+
+        fetchAccidents();
+    }, []);
+
 
     // Create icon function for regular and selected markers
     const createIcon = (accidentName) => {
@@ -139,21 +130,12 @@ const ViewMap = () => {
                             <div className="w-full">
                                 <div className="w-full flex justify-between items-center">
                                     <p className="font-semibold text-xl">{accident.name}</p>
-                                    <p
-                                        className={`text-sm font-semibold ${accident.status === "In Process"
-                                                ? "text-yellow-500"
-                                                : accident.status === "Handled"
-                                                    ? "text-green-500"
-                                                    : accident.status === "Pending"
-                                                        ? "text-red-500"
-                                                        : ""
-                                            }`}
-                                    >
-                                        {accident.status}
-                                    </p>
+                                    <p className={`text-sm font-semibold ${accident.status === "In Progress" ? "text-yellow-500" :
+                                        accident.status === "Handled" ? "text-green-500" :
+                                            accident.status === "Pending" ? "text-red-500" : ""}`}>{accident.status}</p>
                                 </div>
                                 <p className="font-normal text-sm">{accident.desc}</p>
-                                <img src={accident.img} alt={accident.name} />
+                                <img src={accident.img} alt="" />
                                 <div className="w-full flex items-center gap-2 mt-2">
                                     <p>Reported at:</p>
                                     <p className="font-normal">{accident.dateTime}</p>

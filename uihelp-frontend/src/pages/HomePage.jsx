@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import Modal from "react-modal";
-
 import * as L from "leaflet";
+import dayjs from "dayjs";
 
 import RealTimeClock from "../components/RealTimeClock";
 import ReportButton from "../components/ReportButton";
@@ -26,6 +27,9 @@ Modal.setAppElement("#root");
 
 export default function HomePage() {
 
+  // accidents data
+  const [happeningAccidents, setHappeningAccidents] = useState([])
+
   const accidents = [
     { name: "Kebakaran", img: firelogo },
     { name: "Banjir", img: floodlogo },
@@ -37,13 +41,29 @@ export default function HomePage() {
     { name: "Darurat Kesehatan", img: health }
   ];
 
+  useEffect(() => {
+    // Fetch data from the API when the component is mounted
+    const fetchAccidents = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/report/");
+        const data = response.data;
+        const formattedData = data.map((item) => ({
+          name: item.types,
+          desc: item.detail,
+          dateTime: dayjs(item.created_at).format("DD:MM:YYYY HH:mm"),
+          status: item.status,
+          lat: parseFloat(item.location.split(",")[0]), // Convert lat from string to float
+          lng: parseFloat(item.location.split(",")[1]), // Convert lng from string to float
+          img: item.picture, // Placeholder image (update as needed)
+        }));
+        setHappeningAccidents(formattedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
-  const happeningAccidents = [
-    { name: "Kebakaran", desc: "Semuanya begitu cepat. Tidak ada korban jiwa, namun ada beberapa kerusakan bangunan", dateTime: "10-12-2024 10:20", status: "In Progress", lat: -6.361, lng: 106.826, img: kebakaran_ex },
-    { name: "Laka Lantas", desc: "Semuanya begitu cepat. Tidak ada korban jiwa, namun ada beberapa kerusakan bangunan", dateTime: "10-12-2024 10:20", status: "Pending", lat: -6.362, lng: 106.827, img: kecelakaan_ex },
-    { name: "Binatang Buas", desc: "Semuanya begitu cepat. Tidak ada korban jiwa, namun ada beberapa kerusakan bangunan", dateTime: "10-12-2024 10:20", status: "In Progress", lat: -6.363, lng: 106.828, img: kebakaran_ex },
-    { name: "Darurat Kesehatan", desc: "Semuanya begitu cepat. Tidak ada korban jiwa, namun ada beberapa kerusakan bangunan", dateTime: "10-12-2024 10:20", status: "Handled", lat: -6.363, lng: 106.824, img: kebakaran_ex },
-  ];
+    fetchAccidents();
+  }, []);
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [hovered, setHovered] = useState(null);

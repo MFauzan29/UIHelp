@@ -11,7 +11,6 @@ const {
 
 const router = express.Router();
 
-// Route to create a new report
 router.post('/create', async (req, res) => {
    await createReport(req, res);
 });

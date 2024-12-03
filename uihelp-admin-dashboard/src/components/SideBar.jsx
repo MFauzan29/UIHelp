@@ -37,7 +37,7 @@ const SideBar = () => {
         })
     }
 
-    const [expanded, setExpanded] = useState(true)
+    const [expanded, setExpanded] = useState(false)
 
     return (
         <div

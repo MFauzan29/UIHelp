@@ -26,7 +26,7 @@ CREATE TABLE report (
     name TEXT NOT NULL,
     detail TEXT NOT NULL,
     types report_type,
-    status report_status NOT NULL DEFAULT 'not_started',
+    status report_status NOT NULL DEFAULT 'Pending',
     picture TEXT, 
     location TEXT, 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

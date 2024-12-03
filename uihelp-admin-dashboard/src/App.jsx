@@ -14,7 +14,7 @@ const App = () => {
         <SideBar />
         
         {/* Main content area */}
-        <div className="flex-1"> {/* Adjust 'ml-64' to match the width of your sidebar */}
+        <div className="flex-1 ml-10 lg:ml-0"> {/* Adjust 'ml-64' to match the width of your sidebar */}
           <Routes>
             <Route path="/" element={<Navigate to="/view-map" />} />
             <Route path="/view-map" element={<ViewMap />} />

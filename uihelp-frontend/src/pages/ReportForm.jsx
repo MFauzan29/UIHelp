@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 import add_photo from "../assets/add-photo.svg";
 import close from "../assets/close.png";
 import search from '../assets/search.png'
 import AddPhoto from "../components/AddPhoto";
 import UserLocationMap from "../components/UserLocationMap";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 
 const ReportForm = () => {
+
+  const navigate = useNavigate();
 
   // state
   const location = useLocation();
@@ -18,7 +21,7 @@ const ReportForm = () => {
   const [selectedOption, setSelectedOption] = useState(accidentName);
   const [otherText, setOtherText] = useState("");
   const [description, setDescription] = useState("");
-  const [photoList, setPhotoList] = useState([]);
+  const [photo, setPhoto] = useState(null);
   const [isAddPhotoVisible, setIsAddPhotoVisible] = useState(false);
 
   const accidents = ["Kebakaran", "Banjir", "Binatang Buas", "Laka Lantas", "Pohon Tumbang", "Kendaraan Rusak", "Pencurian", "Darurat Kesehatan"]
@@ -34,20 +37,105 @@ const ReportForm = () => {
   const openAddPhoto = () => setIsAddPhotoVisible(true);
   const closeAddPhoto = () => setIsAddPhotoVisible(false);
 
+  // const handleAddPhoto = (photo) => {
+  //   setPhotoList((prevList) => [
+  //     ...prevList,
+  //     { outline: `Image ${prevList.length + 1}`, image: photo },
+  //   ]);
+  //   console.log(photoList);
+
+  //   closeAddPhoto();
+  // };
+
   const handleAddPhoto = (photo) => {
-    setPhotoList((prevList) => [
-      ...prevList,
-      { outline: `Image ${prevList.length + 1}`, image: photo },
-    ]);
-    console.log(photoList);
+    setPhoto(photo); // Simpan foto yang dipilih
+    console.log(photo);
 
     closeAddPhoto();
   };
 
 
-  const handleDeletePhoto = (index) => {
-    setPhotoList((prevList) => prevList.filter((_, i) => i !== index));
+  // const handleDeletePhoto = (index) => {
+  //   setPhotoList((prevList) => prevList.filter((_, i) => i !== index));
+  // };
+
+  const handleDeletePhoto = () => {
+    setPhoto(null); // Reset foto menjadi null
   };
+
+  const [userLocation, setUserLocation] = useState(null);
+  const [address, setAddress] = useState(null);
+  const [error, setError] = useState(null); // Tambahkan state error
+  useEffect(() => {
+    const fetchLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude, longitude } = position.coords;
+            setUserLocation({ latitude, longitude });
+
+            // Reverse geocoding untuk mendapatkan alamat
+            try {
+              const response = await axios.get(
+                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`
+              );
+              setAddress(response.data.address);
+            } catch (err) {
+              console.error("Error fetching address:", err);
+              setError("Gagal mendapatkan detail lokasi.");
+            }
+          },
+          (err) => {
+            setError("Gagal mendapatkan lokasi. Pastikan izin lokasi aktif.");
+            console.error(err);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0,
+          }
+        );
+      } else {
+        setError("Browser Anda tidak mendukung Geolocation API.");
+      }
+    };
+
+    fetchLocation();
+  }, []);
+
+
+  const handleSubmit = async () => {
+    const reportData = {
+      name: name,
+      types: selectedOption === "Other" ? otherText : selectedOption,
+      detail: description,
+      picture: photo,
+      location: userLocation.latitude + "," + userLocation.longitude,
+    };
+
+    console.log("Report Data: ", reportData);
+    try {
+      const response = await axios.post("http://localhost:5000/report/create", reportData);
+      console.log("Response:", response.data);
+
+      // Berikan notifikasi berhasil (opsional)
+      alert("Report submitted successfully!");
+
+      // Reset form setelah pengiriman
+      setName("");
+      setSelectedOption("Select an option");
+      setOtherText("");
+      setDescription("");
+      setPhoto(null); // Reset foto
+
+      navigate("/")
+    } catch (error) {
+      console.error("Error submitting report:", error);
+      alert("Failed to submit report. Please try again.");
+
+    }
+  };
+
 
   return (
     <div className="w-full min-h-screen flex flex-col justify-center items-center bg-[#FFFBE6] gap-5 py-20 font-sans font-normal">
@@ -81,7 +169,7 @@ const ReportForm = () => {
           >
             {
               accidents.map((accident, i) => (
-                <option value={accident}>{accident}</option>
+                <option key={i} value={accident}>{accident}</option>
               ))
             }
           </select>
@@ -124,24 +212,26 @@ const ReportForm = () => {
           >
             <img src={add_photo} alt="Add Photo" />
           </div>
-          <div className="photo-list w-full h-fit flex flex-col gap-1">
-            {photoList.map((photo, i) => (
-              <div
-                key={i}
-                className="bg-[#F2EED7] rounded-sm border py-1 px-2 h-4 w-full flex justify-between items-center gap-2 overflow-hidden"
-              >
-                <p className="text-2xs text-[#626F47] bg-white rounded-md px-1 overflow-hidden w-full">
-                  {photo.outline}
-                </p>
-                <img
-                  src={close}
-                  className="w-3 h-3 cursor-pointer"
-                  alt="Delete Image"
-                  onClick={() => handleDeletePhoto(i)}
-                />
+
+          {
+            photo && (
+              <div className="photo-list w-full h-fit flex flex-col gap-1">
+                <div
+                  className="bg-[#F2EED7] rounded-sm border py-1 px-2 h-4 w-full flex justify-between items-center gap-2 overflow-hidden"
+                >
+                  <p className="text-2xs text-[#626F47] bg-white rounded-md px-1 overflow-hidden w-full">
+                    {photo.outline}
+                  </p>
+                  <img
+                    src={close}
+                    className="w-3 h-3 cursor-pointer"
+                    alt="Delete Image"
+                    onClick={() => handleDeletePhoto(i)}
+                  />
+                </div>
               </div>
-            ))}
-          </div>
+            )
+          }
         </div>
       </div>
 
@@ -154,7 +244,7 @@ const ReportForm = () => {
 
         <div className="bg-white rounded-lg flex flex-col w-full h-fit border">
           {/* Tampilkan peta dan lokasinya disini */}
-          <UserLocationMap />
+          <UserLocationMap userLocation={userLocation} address={address} />
         </div>
 
         <p className="text-slate-500">Lakukan refresh jika lokasimu tidak akurat!</p>
@@ -162,7 +252,7 @@ const ReportForm = () => {
 
       {/* Next Button */}
       <div className="flex justify-end w-1/2">
-        <button className="bg-[#ff4b4b] text-white text-lg font-bold px-8 py-1 rounded-lg shadow-lg border border-gray-400 hover:bg-[#e04343] transition duration-300">
+        <button className="bg-[#ff4b4b] text-white text-lg font-bold px-8 py-1 rounded-lg shadow-lg border border-gray-400 hover:bg-[#e04343] transition duration-300" onClick={handleSubmit}>
           Next
         </button>
       </div>

@@ -5,11 +5,19 @@ const { uploadToCloudinary } = require('../utils/uploadToCloudinary');
 
 // Create a new report
 async function createReport(req, res) {
-    const { name, types, detail, picture, location } = req.body;
+    const { name, types, detail, picture, location } = req.body; // Ambil data dari req.body
     let fileUrl = null;
 
     try {
-        // Jika gambar dalam format base64 diterima
+        // Validasi input
+        if (!name || !detail || !types) {
+            return res.status(400).json({
+                success: false,
+                message: 'Name, detail, and types are required.',
+            });
+        }
+
+        // Jika gambar dalam format base64 diterima, unggah ke Cloudinary
         if (picture) {
             const result = await uploadToCloudinary(picture); // Mengirim gambar base64 ke Cloudinary
             fileUrl = result.secure_url; // Mendapatkan URL aman dari respon Cloudinary
@@ -17,16 +25,19 @@ async function createReport(req, res) {
 
         // Menyimpan data laporan ke database
         const query = `
-        INSERT INTO report (name, types, detail, picture, location)
-        VALUES ($1, $2, $3, $4, $5)
-        RETURNING *;
-      `;
-        const values = [name, detail, types, fileUrl, location]; // Gambar disimpan sebagai URL, bukan base64
+            INSERT INTO report (name, types, detail, picture, location)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING *;
+        `;
+        const values = [name, types, detail, fileUrl, location]; // Pastikan urutan values sesuai query
 
         const { rows } = await pool.query(query, values);
         res.status(201).json({ success: true, data: rows[0] });
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
     }
 }
 
@@ -34,12 +45,12 @@ async function createReport(req, res) {
 // Update a report by id
 async function reportUpdate(req, res) {
     const { id } = req.params;
-    const { name, detail, types, status/*, location*/ } = req.body;
+    const {status} = req.body;
     try {
         const result = await pool.query(
             `UPDATE report 
-             SET name = $1, detail = $2, types = $3, status = $4, updated_at = CURRENT_TIMESTAMP WHERE id = $5 RETURNING *`,
-            [name, detail, types, status, /*picture, location.lon, location.lat, = $6, location = POINT($7, $8),*/ id]
+             SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *`,
+            [ status, id]
         );
         if (result.rows.length === 0) {
             res.status(404).json({ error: 'Report not found' });

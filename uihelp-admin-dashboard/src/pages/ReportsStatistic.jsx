@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Doughnut, Bar } from "react-chartjs-2";
 import {
     Chart as ChartJS,
@@ -9,20 +9,13 @@ import {
     LinearScale,
     BarElement,
 } from "chart.js";
+import axios from "axios";
+import dayjs from "dayjs";
 
 // Registrasi komponen Chart.js
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
 const ReportsStatistic = () => {
-    // Data dari laporan dan jenis kecelakaan
-    const happeningAccidents = [
-        { name: "Kebakaran", dateTime: "2024-12-11 10:20", status: "In Process" },
-        { name: "Laka Lantas", dateTime: "2024-12-10 10:20", status: "Pending" },
-        { name: "Binatang Buas", dateTime: "2024-12-10 10:20", status: "In Process" },
-        { name: "Darurat Kesehatan", dateTime: "2024-11-01 10:20", status: "Handled" },
-        { name: "Pohon Tumbang", dateTime: "2024-11-01 10:20", status: "Handled" },
-        { name: "Pohon Tumbang", dateTime: "2024-02-01 10:20", status: "Handled" },
-    ];
 
     const accidents = [
         "Kebakaran",
@@ -34,6 +27,34 @@ const ReportsStatistic = () => {
         "Pencurian",
         "Darurat Kesehatan",
     ];
+
+    const [happeningAccidents, setHappeningAccidents] = useState([]);
+
+    useEffect(() => {
+        const fetchAccidents = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/report/');
+                const data = response.data;
+
+                const formattedData = data.map((item) => ({
+                    id: item.id,
+                    name: item.types,
+                    desc: item.detail,
+                    dateTime: dayjs(item.created_at).toISOString(),
+                    status: item.status,
+                    lat: parseFloat(item.location.split(',')[0]),
+                    lng: parseFloat(item.location.split(',')[1]),
+                    img: item.picture || DEFAULT_IMAGE,
+                }));
+
+                setHappeningAccidents(formattedData);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchAccidents();
+    }, []);
 
     // Menghitung jumlah setiap jenis kecelakaan
     const accidentCounts = accidents.map(
