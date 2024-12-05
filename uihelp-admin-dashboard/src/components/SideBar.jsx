@@ -6,10 +6,13 @@ import manage from '../assets/manage.png'
 import statistic from '../assets/statistic.png'
 import logout_icon from '../assets/logout.svg'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 
 const SideBar = () => {
 
     const navigate = useNavigate()
+
+    const { logout } = useAuth();
 
     const menus = [
         {
@@ -71,7 +74,7 @@ const SideBar = () => {
                         ))
                     }
                 </div>
-                <div onClick={() => navigate("/")} className='absolute flex gap-2 bottom-6 duration-300 cursor-pointer mb-40 lg:mb-10'>
+                <div onClick={logout} className='absolute flex gap-2 bottom-6 duration-300 cursor-pointer mb-40 lg:mb-10'>
                     <img src={logout_icon} className='scale-90 lg:scale-100' alt="" />
                     <p className={`text-danger text-base lg:text-lg transition-all duration-300 ${!expanded && "hidden"}`}>Logout</p>
                 </div>
