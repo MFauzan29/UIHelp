@@ -15,7 +15,7 @@ router.post('/login', async (req, res) => {
     await login(req, res);
 });
 
-router.post('/signUp', async (req, res) => {
+router.post('/signup', async (req, res) => {
     await signup(req, res);
 });
 

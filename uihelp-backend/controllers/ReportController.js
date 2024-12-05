@@ -1,4 +1,3 @@
-
 const pool = require('../db');
 
 const { uploadToCloudinary } = require('../utils/uploadToCloudinary');

@@ -1,7 +1,8 @@
 // server/controllers/AdminController.js
-const pool = require('../db').default;
+const pool = require('../db');
 const bcrypt = require('bcrypt');
 
+// Login Controller
 async function login(req, res) {
     const { email, password } = req.body;
 
@@ -12,53 +13,91 @@ async function login(req, res) {
         );
 
         if (result.rowCount === 0) {
-            return res.status(401).json({ error: "Incorrect email or password provided" });
+            return res.status(401).json({ error: "Incorrect email or password" });
         }
 
-        var admin = result.rows[0];
+        const admin = result.rows[0];
 
         const isPasswordValid = await bcrypt.compare(password, admin.password);
-
         if (!isPasswordValid) {
-            return res.status(401).json({ error: "Incorrect password provided" });
+            return res.status(401).json({ error: "Incorrect email or password" });
         }
 
-        // Generate and return a token or set a session cookie here
+        // Generate token (example using JWT)
+        const jwt = require('jsonwebtoken');
+        const secret = process.env.JWT_SECRET || 'defaultSecretKey';
+        const token = jwt.sign({ id: admin.id, email: admin.email }, secret, {
+            expiresIn: '1d', // Token valid for 1 day
+        });
 
-        res.status(200).json({ message: "Login Successful", account: admin });
+        res.status(200).json({
+            message: "Login Successful",
+            token,
+            account: {
+                id: admin.id,
+                email: admin.email,
+                name: admin.name,
+            },
+        });
     } catch (error) {
         console.error('Error in login:', error);
         res.status(500).json({ error: "An error occurred" });
     }
 }
 
+
+// Signup Controller
 async function signup(req, res) {
     const { name, email, password } = req.body;
-    // Dapatkan nama file dari file yang diunggah
+    console.log(req.body);
+    
+
+    // Validasi Input Secara Manual
+    if (!name || name.trim().length < 3 || name.trim().length > 50) {
+        return res.status(400).json({ error: "Name must be between 3 and 50 characters" });
+    }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return res.status(400).json({ error: "Invalid email format" });
+    }
+    if (!password || password.length < 8 || password.length > 100) {
+        return res.status(400).json({ error: "Password must be between 8 and 100 characters" });
+    }
 
     try {
-        const emailCheck = await pool.query('SELECT COUNT(*) FROM admin WHERE email = $1', [email]);
+        // Cek apakah email sudah digunakan
+        const emailCheckQuery = 'SELECT COUNT(*) FROM admin WHERE email = $1';
+        const emailCheck = await pool.query(emailCheckQuery, [email]);
 
-        if (emailCheck.rows[0].count > 0) {
+        if (parseInt(emailCheck.rows[0].count, 10) > 0) {
             return res.status(400).json({ error: "Email is already in use" });
         }
 
-        //const adminCount = await pool.query('SELECT COUNT(*) FROM admin');
-
+        // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const result = await pool.query(
-            'INSERT INTO admin (name, email, password) VALUES ($1, $2, $3) RETURNING *',
-            [name, email, hashedPassword]
-        );
+        // Masukkan admin baru ke database
+        const insertAdminQuery = 'INSERT INTO admin (name, email, password) VALUES ($1, $2, $3) RETURNING *';
+        const result = await pool.query(insertAdminQuery, [name.trim(), email.trim(), hashedPassword]);
 
         const newAdmin = result.rows[0];
-        res.status(201).json(newAdmin);
+
+        // Kirim respons sukses
+        res.status(201).json({
+            message: "Signup successful",
+            account: {
+                id: newAdmin.id,
+                name: newAdmin.name,
+                email: newAdmin.email,
+            },
+        });
     } catch (error) {
         console.error('Error registering admin:', error);
         res.status(500).json({ error: "An error occurred" });
     }
 }
+
+module.exports = { signup };
+
 
 async function getAllAdmin(req, res) {
     try {
@@ -100,14 +139,10 @@ async function getAdminById(req, res) {
     }
 }
 
+// Logout Controller
 async function logout(req, res) {
     try {
-        // Clear the session or remove the authentication token
-        // This will effectively log the user out
-        req.session.destroy(); // Assuming you're using session-based authentication
-        // or
-        // res.clearCookie('authToken'); // Assuming you're using token-based authentication
-
+        // For token-based authentication, instruct the client to remove the token
         res.status(200).json({ message: 'Logout successful' });
     } catch (error) {
         console.error('Error in logout:', error);
@@ -115,10 +150,11 @@ async function logout(req, res) {
     }
 }
 
-module.exports = { 
-    login, 
-    signup, 
-    getAllAdmin, 
-    getAdminById, 
-    logout 
+
+module.exports = {
+    login,
+    signup,
+    getAllAdmin,
+    getAdminById,
+    logout
 };
