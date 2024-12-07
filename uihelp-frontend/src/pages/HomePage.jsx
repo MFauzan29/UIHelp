@@ -11,16 +11,14 @@ import RealTimeClock from "../components/RealTimeClock";
 import ReportButton from "../components/ReportButton";
 
 // asset imports
-import firelogo from "../assets/fire.jpg";
-import floodlogo from "../assets/flood.png";
-import animallogo from "../assets/wildanimal.png";
-import crashlogo from "../assets/crash.png";
-import fallentree from "../assets/fallentree.png";
-import brokencar from "../assets/brokencar.jpg";
-import criminal from "../assets/criminal.png";
-import health from "../assets/health.png";
-import kebakaran_ex from '../assets/kebarakan-ex.jpg'
-import kecelakaan_ex from '../assets/kecelakaan-ex.jpg'
+import firelogo from "../assets/accidents/firelogo.png";
+import floodlogo from "../assets/accidents/floodlogo.png";
+import animallogo from "../assets/accidents/animallogo.png";
+import crashlogo from "../assets/accidents/crashlogo.png";
+import fallentree from "../assets/accidents/fallentree.png";
+import brokencar from "../assets/accidents/brokencar.png";
+import criminal from "../assets/accidents/criminal.png";
+import health from "../assets/accidents/health.png";
 import arrow from '../assets/arrow.svg'
 
 Modal.setAppElement("#root");
