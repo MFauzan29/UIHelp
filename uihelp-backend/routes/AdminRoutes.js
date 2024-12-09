@@ -6,14 +6,18 @@ const {
     signup, 
     getAllAdmin, 
     getAdminById, 
-    logout 
+    logout, 
+    getCurrentUser
 } = require('../controllers/AdminController');
+const authenticate = require('../middleware/authenticate');
 
 const router = express.Router();
 
 router.post('/login', async (req, res) => {
     await login(req, res);
 });
+
+router.get('/me', authenticate, getCurrentUser);
 
 router.post('/signup', async (req, res) => {
     await signup(req, res);

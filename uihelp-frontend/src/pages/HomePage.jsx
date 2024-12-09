@@ -127,6 +127,12 @@ export default function HomePage() {
     });
   };
 
+  // Define UI bounds
+  const bounds = [
+    [-6.3725, 106.8168], // Southwest corner (UI lower-left)
+    [-6.3515, 106.8355], // Northeast corner (UI upper-right)
+  ];
+
   return (
     <div className="relative w-auto h-screen flex justify-center items-center bg-[#FFFBE6] font-sans">
       <RealTimeClock />
@@ -137,35 +143,39 @@ export default function HomePage() {
           <p className={`ml-5 py-2 font-semibold text-xl w-full border-b-2 ${sidebarOpen ? 'block' : 'block'}`}>Daftar Insiden</p>
           <img
             src={arrow}
-            className={`rotate-${sidebarOpen ? '180' : '0'} cursor-pointer transition-transform duration-700 ease-in-out`}
+            className={`${sidebarOpen ? 'rotate-180' : 'rotate-0'} cursor-pointer transition-transform duration-500 ease-in-out`}
             alt=""
             onClick={toggleSidebar}
           />
         </div>
 
         <div className={`w-full max-h-[26rem] overflow-scroll ${sidebarOpen ? '' : 'hidden'}`}>
-          {happeningAccidents.map((accident, i) => (
-            <div key={i} className="w-full h-26 border-b py-2 px-5 flex justify-between items-center gap-2 cursor-pointer" onClick={() => handleAccidentClick(accident)}>
-              <div className="foto-kejadian w-2/5 h-20 rounded-md overflow-hidden">
-                <img src={accident.img} className="w-full h-full object-cover" alt="" />
-              </div>
-              <div className="w-3/5 h-full py-2 pl-3 flex flex-col items-start">
-                <div className="w-full flex justify-between">
-                  <p className="font-semibold text-base">{accident.name}</p>
-                  <p className={`font-normal text-xs ${accident.status === "In Progress" ? "text-yellow-500" :
-                    accident.status === "Handled" ? "text-green-500" :
-                      accident.status === "Pending" ? "text-red-500" : ""}`}>{accident.status}</p>
-                </div>
+          {
+            !happeningAccidents ?
+              <div className="text-base font-medium italic p-2 text-slate-500">No accidents occurred </div>
+              :
+              happeningAccidents.map((accident, i) => (
+                <div key={i} className="w-full h-26 border-b py-2 px-5 flex justify-between items-center gap-2 cursor-pointer" onClick={() => handleAccidentClick(accident)}>
+                  <div className="foto-kejadian w-2/5 h-20 rounded-md overflow-hidden">
+                    <img src={accident.img} className="w-full h-full object-cover" alt="" />
+                  </div>
+                  <div className="w-3/5 h-full py-2 pl-3 flex flex-col items-start">
+                    <div className="w-full flex justify-between">
+                      <p className="font-semibold text-base">{accident.name}</p>
+                      <p className={`font-normal text-xs ${accident.status === "In Progress" ? "text-yellow-500" :
+                        accident.status === "Handled" ? "text-green-500" :
+                          accident.status === "Pending" ? "text-red-500" : ""}`}>{accident.status}</p>
+                    </div>
 
-                <p alt={accident.desc} className="text-xs text-slate-500 font-normal italic overflow-hidden text-ellipsis text-justify">
-                  {accident.desc}
-                </p>
-                <div className="w-full flex justify-end font-normal text-[0.7rem] mt-2">
-                  {accident.dateTime}
+                    <p alt={accident.desc} className="text-xs text-slate-500 font-normal italic overflow-hidden text-ellipsis text-justify">
+                      {accident.desc}
+                    </p>
+                    <div className="w-full flex justify-end font-normal text-[0.7rem] mt-2">
+                      {accident.dateTime}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ))}
+              ))}
         </div>
       </div>
 
@@ -236,6 +246,7 @@ export default function HomePage() {
       <MapContainer
         center={[-6.361043581175633, 106.82687215519378]}
         zoom={14.5}
+        maxBounds={bounds}
         style={{
           width: "100%",
           height: "100%",
@@ -268,7 +279,9 @@ export default function HomePage() {
                       accident.status === "Pending" ? "text-red-500" : ""}`}>{accident.status}</p>
                 </div>
                 <p className="font-normal text-sm">{accident.desc}</p>
-                <img src={accident.img} alt="" />
+                <div className="w-72 object-cover">
+                  <img src={accident.img} alt="" />
+                </div>
                 <div className="w-full flex items-center gap-2 mt-2">
                   <p>Reported at:</p>
                   <p className="font-normal">{accident.dateTime}</p>

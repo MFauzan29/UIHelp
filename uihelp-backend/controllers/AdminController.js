@@ -29,6 +29,8 @@ async function login(req, res) {
         const token = jwt.sign({ id: admin.id, email: admin.email }, secret, {
             expiresIn: '1d', // Token valid for 1 day
         });
+        console.log(token);
+        
 
         res.status(200).json({
             message: "Login Successful",
@@ -41,6 +43,26 @@ async function login(req, res) {
         });
     } catch (error) {
         console.error('Error in login:', error);
+        res.status(500).json({ error: "An error occurred" });
+    }
+}
+
+async function getCurrentUser(req, res) {
+    try {
+        const userId = req.user.id; // ID pengguna dari token (diatur di middleware)
+        
+        const result = await pool.query(
+            'SELECT id, email, name FROM admin WHERE id = $1',
+            [userId]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        res.status(200).json(result.rows[0]); // Kembalikan data pengguna
+    } catch (error) {
+        console.error("Error in getCurrentUser:", error.message);
         res.status(500).json({ error: "An error occurred" });
     }
 }
@@ -96,9 +118,6 @@ async function signup(req, res) {
     }
 }
 
-module.exports = { signup };
-
-
 async function getAllAdmin(req, res) {
     try {
         const result = await pool.query(
@@ -153,6 +172,7 @@ async function logout(req, res) {
 
 module.exports = {
     login,
+    getCurrentUser,
     signup,
     getAllAdmin,
     getAdminById,

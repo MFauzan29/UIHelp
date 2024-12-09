@@ -1,11 +1,37 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 import axios from "axios";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [user, setUser] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(null);    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            const storedToken = localStorage.getItem("authToken");
+
+            if (storedToken) {
+                try {
+                    // Validasi token dengan endpoint API, misalnya `/admin/me`
+                    const response = await axios.get("http://localhost:5000/admin/me", {
+                        headers: { Authorization: `Bearer ${storedToken}` },
+                    });
+
+                    console.log("data from token check: ", response.data);
+                    
+
+                    setIsAuthenticated(true);
+                    setUser(response.data); // Set user data
+                } catch (error) {
+                    console.error("Token validation failed:", error.message);
+                    localStorage.removeItem("authToken"); // Bersihkan token jika tidak valid
+                }
+            }
+        };
+
+        checkAuth();
+    }, []);
+
 
     const login = async (email, password) => {
         try {
@@ -18,6 +44,8 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem("authToken", token); // Save token to localStorage
             setIsAuthenticated(true);
             setUser(account);
+            console.log("ppp", token);
+            
         } catch (error) {
             console.error("Login failed:", error.response?.data?.error || error.message);
             throw error; // Rethrow for error handling in Login component

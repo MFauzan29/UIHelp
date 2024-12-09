@@ -6,13 +6,12 @@ import manage from '../assets/manage.png'
 import statistic from '../assets/statistic.png'
 import logout_icon from '../assets/logout.svg'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
+import ConfirmationModal from './ConfirmationModal'
 
 const SideBar = () => {
 
     const navigate = useNavigate()
-
-    const { logout } = useAuth();
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const menus = [
         {
@@ -40,7 +39,23 @@ const SideBar = () => {
         })
     }
 
+    // side bar configuration
     const [expanded, setExpanded] = useState(false)
+    useEffect(() => {
+        // Function to check screen size
+        const updateSidebarState = () => {
+            const isLargeScreen = window.matchMedia('(min-width: 1024px)').matches;
+            setExpanded(isLargeScreen);
+        };
+
+        // Initial check
+        updateSidebarState();
+
+        // Add resize event listener
+        window.addEventListener('resize', updateSidebarState);
+
+        return () => window.removeEventListener('resize', updateSidebarState);
+    }, []);
 
     return (
         <div
@@ -74,10 +89,17 @@ const SideBar = () => {
                         ))
                     }
                 </div>
-                <div onClick={logout} className='absolute flex gap-2 bottom-6 duration-300 cursor-pointer mb-40 lg:mb-10'>
+                <div onClick={() => setIsModalOpen(true)} className='absolute flex gap-2 bottom-6 duration-300 cursor-pointer mb-40 lg:mb-10'>
                     <img src={logout_icon} className='scale-90 lg:scale-100' alt="" />
                     <p className={`text-danger text-base lg:text-lg transition-all duration-300 ${!expanded && "hidden"}`}>Logout</p>
                 </div>
+                <ConfirmationModal 
+                    isOpen={isModalOpen} 
+                    onClose={() => setIsModalOpen(false)}
+                    title={"Konfirmasi Logout"}
+                    content={"Apakah Anda yakin ingin keluar?"}
+                    confirmButton={"Logout"}
+                />
             </div>
         </div>
     )

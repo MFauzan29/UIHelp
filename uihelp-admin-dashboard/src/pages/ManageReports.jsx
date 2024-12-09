@@ -71,7 +71,7 @@ const ManageReports = () => {
     };
 
     return (
-        <div className="p-6 pl-16 lg:pl-0">
+        <div className="p-6 pl-16 lg:pl-5">
             <h1 className="text-2xl font-bold mb-6 text-blue-800">Manage Accidents</h1>
 
             {Object.entries(sortedAccidents).map(([key, accidents]) => (

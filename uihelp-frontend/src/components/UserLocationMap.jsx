@@ -13,48 +13,7 @@ L.Icon.Default.mergeOptions({
 });
 
 const UserLocationMap = ({userLocation, address}) => {
-    // const [userLocation, setUserLocation] = useState(null);
-    // const [address, setAddress] = useState(null);
     const [error, setError] = useState(null);
-    
-
-    // useEffect(() => {
-    //     // Mendapatkan lokasi pengguna
-    //     const fetchLocation = () => {
-    //         if (navigator.geolocation) {
-    //             navigator.geolocation.getCurrentPosition(
-    //                 async (position) => {
-    //                     const { latitude, longitude } = position.coords;
-    //                     setUserLocation({ latitude, longitude });
-
-    //                     // Reverse geocoding untuk mendapatkan alamat
-    //                     try {
-    //                         const response = await axios.get(
-    //                             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`
-    //                         );
-    //                         setAddress(response.data.address);
-    //                     } catch (err) {
-    //                         console.error("Error fetching address:", err);
-    //                         setError("Gagal mendapatkan detail lokasi.");
-    //                     }
-    //                 },
-    //                 (err) => {
-    //                     setError("Gagal mendapatkan lokasi. Pastikan izin lokasi aktif.");
-    //                     console.error(err);
-    //                 },
-    //                 {
-    //                     enableHighAccuracy: true,
-    //                     timeout: 5000,
-    //                     maximumAge: 0,
-    //                 }
-    //             );
-    //         } else {
-    //             setError("Browser Anda tidak mendukung Geolocation API.");
-    //         }
-    //     };
-
-    //     fetchLocation();
-    // }, []);
 
     return (
         <div className="w-full h-80 bg-gray-200 border rounded-lg flex flex-col justify-center items-center">

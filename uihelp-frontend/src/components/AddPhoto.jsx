@@ -1,5 +1,7 @@
 import React, { useRef } from "react";
 import Webcam from "react-webcam";
+import imageCompression from "browser-image-compression";
+
 import close from "../assets/close.png";
 
 const AddPhoto = ({ onClose, onCapture }) => {
@@ -10,16 +12,27 @@ const AddPhoto = ({ onClose, onCapture }) => {
         onCapture(imageSrc); // Kirim foto yang diambil ke ReportForm
     };
 
-    const handleFileChange = (event) => {
+    const handleFileChange = async (event) => {
         const file = event.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                onCapture(reader.result);
-            };
-            reader.readAsDataURL(file);
+            try {
+                const options = {
+                    maxSizeMB: 1, // Maksimal ukuran file 1MB
+                    maxWidthOrHeight: 1920, // Resolusi maksimum
+                    useWebWorker: true, // Gunakan web worker untuk performa lebih baik
+                };
+                const compressedFile = await imageCompression(file, options);
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    onCapture(reader.result);
+                };
+                reader.readAsDataURL(compressedFile); // Baca file terkompresi sebagai Base64
+            } catch (error) {
+                console.error("Error compressing image:", error);
+            }
         }
     };
+    
     
 
     return (

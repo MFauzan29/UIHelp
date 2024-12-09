@@ -1,5 +1,4 @@
 const express = require('express');
-const upload = require('../middleware/multerConfig'); // Updated multer middleware
 
 const {
    createReport,
